@@ -1,0 +1,26 @@
+
+
+services:
+  db:
+    container_name: minimart_pg
+    image: postgres:latest
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DATABASE: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - minimart_network
+
+volumes:
+  data:
+
+networks:
+  minimart_network:
+    driver: bridge
