@@ -1,0 +1,2 @@
+### server health check
+GET http://localhost:8080/api/v1/healthz
