@@ -1,4 +1,4 @@
-package com.tamamhuda.minimart.domain.model;
+package com.tamamhuda.minimart.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tamamhuda.minimart.domain.enums.OrderStatus;

@@ -59,8 +59,10 @@ springboot-minimart-api/
 
 ### 3. Input Validation
 
-* DTO-level validation using `@NotBlank`, `@Size`, etc.
-* Global exception handling with `@RestControllerAdvice`
+- Validation applied at the **DTO level** using annotations such as `@NotBlank`, `@Size`, `@Email`, `@Positive`, etc.
+- Centralized error handling via `@RestControllerAdvice`, using:
+    - `@ExceptionHandler(MethodArgumentNotValidException.class)` — for invalid method arguments (e.g., DTOs)
+    - `@ExceptionHandler(ConstraintViolationException.class)` — for constraint violations outside DTOs (e.g., path/query params, manual validation)
 
 ---
 
@@ -239,7 +241,7 @@ springboot-minimart-api/
 
 ### Prerequisites:
 
-* Java 17
+* Java 24
 * Docker
 
 ### Run via Docker Compose
