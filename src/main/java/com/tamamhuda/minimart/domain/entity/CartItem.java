@@ -1,4 +1,4 @@
-package com.tamamhuda.minimart.domain.model;
+package com.tamamhuda.minimart.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -7,7 +7,6 @@ import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 

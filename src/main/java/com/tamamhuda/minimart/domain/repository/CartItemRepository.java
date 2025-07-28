@@ -1,6 +1,6 @@
 package com.tamamhuda.minimart.domain.repository;
 
-import com.tamamhuda.minimart.domain.model.CartItem;
+import com.tamamhuda.minimart.domain.entity.CartItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
