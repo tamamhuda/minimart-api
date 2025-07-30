@@ -1,19 +1,21 @@
 package com.tamamhuda.minimart.common.exception;
 
 
-import com.tamamhuda.minimart.common.dto.ErrorResponseDto;
+import com.tamamhuda.minimart.application.dto.ErrorResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -96,5 +98,45 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(response);
     }
+
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ErrorResponseDto> handleResponseStatusException(ResponseStatusException ex) {
+        HttpStatusCode statusCode = ex.getStatusCode();
+
+        String message = ex.getReason() != null
+                ? ex.getReason()
+                : (statusCode instanceof HttpStatus httpStatus ? httpStatus.getReasonPhrase() : "Unknown Status");
+
+        String error;
+        if (statusCode instanceof HttpStatus httpStatus) {
+            error = httpStatus.value() + " " + httpStatus.getReasonPhrase();
+        } else {
+            error = "HTTP " + statusCode.value();
+        }
+
+        ErrorResponseDto errorResponse = ErrorResponseDto.builder()
+                .statusCode(statusCode.value())
+                .message(message)
+                .error(error)
+                .build();
+
+        return new ResponseEntity<>(errorResponse, statusCode);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDto> handleAllExceptions(Exception ex, HttpServletRequest request) {
+        final String exceptionName = ex.getClass().getSimpleName();
+
+        ErrorResponseDto errorResponse = ErrorResponseDto.builder()
+                .statusCode(exceptionName.equals(UnauthorizedException.class.getSimpleName()) ? HttpStatus.UNAUTHORIZED.value() : HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .message( ex.getMessage())
+                .error(Map.of("exception", ex.getClass().getSimpleName()))
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+
 
 }

@@ -1,4 +1,4 @@
-package com.tamamhuda.minimart.common.dto;
+package com.tamamhuda.minimart.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.Instant;
-import java.util.Map;
-import java.util.Optional;
 
 @Data
 @Builder
@@ -16,8 +14,8 @@ import java.util.Optional;
 public class ErrorResponseDto {
     private int statusCode;
     private String message;
-    private Map<String, String> error;
-    private String path; // nullable
+    private Object error; // Can be String or Map<String, String>
+    private String path;
     @Builder.Default
     private Instant timestamp = Instant.now();
 }

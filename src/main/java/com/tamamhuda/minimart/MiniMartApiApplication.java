@@ -1,16 +1,15 @@
 package com.tamamhuda.minimart;
 
-import com.tamamhuda.minimart.common.dto.TestDto;
+import com.tamamhuda.minimart.application.dto.TestDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
-import jakarta.websocket.server.PathParam;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,12 +18,12 @@ import java.util.Map;
 
 
 @RestController
+@Validated
 @SpringBootApplication
 @EntityScan("com.tamamhuda.minimart.domain.entity")
-@Validated
 public class MiniMartApiApplication {
 
-
+	@PreAuthorize("hasRole('CUSTOMER')")
 	@GetMapping("/healthz")
 	public ResponseEntity<Map<String, Object>> healthz() {
 		Map<String, Object> response = new HashMap<>();

@@ -4,12 +4,14 @@ import com.tamamhuda.minimart.domain.enums.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -18,12 +20,9 @@ import java.util.UUID;
 @Table(name = "users")
 @Getter
 @Setter
-public class User implements UserDetails {
+@ToString
+public class User extends BaseEntity implements UserDetails {
 
-    @Id
-    @UuidGenerator
-    @Column(columnDefinition = "uuid DEFAULT gen_random_uuid()", updatable = false, nullable = false)
-    private UUID id = UUID.randomUUID();
 
     @Column(unique = true, nullable = false)
     private String username;
@@ -52,12 +51,6 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
-
-    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP default CURRENT_TIMESTAMP")
-    private Instant createdAt = Instant.now();
-
-    @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP default CURRENT_TIMESTAMP")
-    private Instant updatedAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

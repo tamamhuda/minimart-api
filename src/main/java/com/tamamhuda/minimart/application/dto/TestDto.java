@@ -1,4 +1,4 @@
-package com.tamamhuda.minimart.common.dto;
+package com.tamamhuda.minimart.application.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

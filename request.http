@@ -1,5 +1,6 @@
-### server health check
+### server health check -> protect endpoint
 GET http://localhost:8080/api/v1/healthz
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidGFtYW1odWRhIiwiZXhwIjoxNzUzODM0MDk3LCJpYXQiOjE3NTM4MzM3OTcsInJvbGVzIjpbIlJPTEVfQ1VTVE9NRVIiXX0.nGc5TTXZls7TkZA-msL3Jz6nvMz102Kg9xN3J5hkz8Q
 
 ### test dto validation
 POST http://localhost:8080/api/v1/test/1?filter=
@@ -8,3 +9,30 @@ Content-Type: application/json
 {
   "message": "Hello World"
 }
+
+### auth login
+POST http://localhost:8080/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "username": "tamamhda@gmail.com",
+  "password": "passwordd"
+
+}
+
+### auth register user
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "full_name": "tamam huda",
+  "username": "tamamhuda",
+  "email": "tamamhda@gmail.com",
+  "password": "password",
+  "confirm_password": "password"
+
+}
+
+### auth current user authenticated
+GET http://localhost:8080/api/v1/auth/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidGFtYW1odWRhIiwiZXhwIjoxNzUzODg5NDE4LCJpYXQiOjE3NTM4ODkxMTgsInJvbGVzIjpbIlJPTEVfQ1VTVE9NRVIiXX0.4zxNaRWMWMgflO1nh83dU4BA35FLajFOiQY8z27AaNY
