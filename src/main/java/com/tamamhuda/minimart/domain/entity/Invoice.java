@@ -13,25 +13,17 @@ import java.util.UUID;
 @Table
 @Getter
 @Setter
-public class Invoice {
-
-    @Id
-    @UuidGenerator
-    @Column(columnDefinition = "uuid DEFAULT gen_random_uuid()", nullable = false, updatable = false)
-    private UUID id = UUID.randomUUID();
+public class Invoice extends BaseEntity {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "order_id", nullable = false)
     @JsonIgnore
     private Order order;
 
+    @Column(name = "invoice_pdf")
     private String invoicePdf;
 
-    private Instant issued_date;
+    @Column(name = "issued_date")
+    private Instant issuedDate;
 
-    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP default CURRENT_TIMESTAMP")
-    private Instant createdAt = Instant.now();
-
-    @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP default CURRENT_TIMESTAMP")
-    private Instant updatedAt;
 }

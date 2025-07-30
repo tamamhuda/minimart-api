@@ -13,12 +13,7 @@ import java.util.UUID;
 @Table
 @Getter
 @Setter
-public class Category {
-
-    @Id
-    @UuidGenerator
-    @Column(columnDefinition = "uuid DEFAULT gen_random_uuid()", nullable = false, updatable = false)
-    private UUID id = UUID.randomUUID();
+public class Category extends BaseEntity {
 
     @Column(unique = true, nullable = false)
     private String name;
@@ -28,9 +23,4 @@ public class Category {
     @OneToMany(mappedBy = "category")
     private List<Product> products;
 
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",nullable = false,  updatable = false)
-    private Instant createdAt = Instant.now();
-
-    @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false)
-    private Instant updatedAt = Instant.now();
 }
