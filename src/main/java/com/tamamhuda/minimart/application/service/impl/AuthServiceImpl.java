@@ -60,13 +60,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResponseEntity<UserDto> me() throws UnauthorizedException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        String username = authentication.getName();
-
-        User user = userService.getUserByUsername(username);
-
+    public ResponseEntity<UserDto> me(User user) throws UnauthorizedException {
         return ResponseEntity.status(HttpStatus.OK).body(userDtoMapper.toDto(user));
     }
 }
