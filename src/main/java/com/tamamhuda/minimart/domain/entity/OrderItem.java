@@ -12,18 +12,13 @@ import java.util.UUID;
 @Table
 @Getter
 @Setter
-public class OrderItem {
+public class OrderItem extends BaseEntity {
 
-    @Id
-    @UuidGenerator
-    @Column(columnDefinition = "uuid DEFAULT gen_random_uuid()", nullable = false, updatable = false)
-    private UUID id = UUID.randomUUID();
 
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
     @JsonIgnore
     private Order order;
-
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id", nullable = false)

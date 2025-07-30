@@ -15,12 +15,8 @@ import java.util.UUID;
 @Table(name = "orders")
 @Getter
 @Setter
-public class Order {
+public class Order extends BaseEntity {
 
-    @Id
-    @UuidGenerator
-    @Column(columnDefinition = "uuid DEFAULT gen_random_uuid()", nullable = false, updatable = false)
-    private UUID id = UUID.randomUUID();
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -43,9 +39,4 @@ public class Order {
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Invoice invoice;
 
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",nullable = false,  updatable = false)
-    private Instant createdAt;
-
-    @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false)
-    private Instant updatedAt;
 }

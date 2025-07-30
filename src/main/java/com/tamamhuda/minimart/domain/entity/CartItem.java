@@ -14,12 +14,7 @@ import java.util.UUID;
 @Table(name = "cart_item")
 @Getter
 @Setter
-public class CartItem {
-
-    @Id
-    @UuidGenerator
-    @Column(columnDefinition = "uuid DEFAULT gen_random_uuid()", nullable = false)
-    private UUID id = UUID.randomUUID();
+public class CartItem extends BaseEntity {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "cart_id",  nullable = false)
@@ -34,10 +29,5 @@ public class CartItem {
     @Column(nullable = false)
     private Integer quantity = 1;
 
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",nullable = false,  updatable = false)
-    private Instant createdAt;
-
-    @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false)
-    private Instant updatedAt;
 
 }

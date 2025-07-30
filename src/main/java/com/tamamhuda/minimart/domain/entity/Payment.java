@@ -15,12 +15,9 @@ import java.util.UUID;
 @Table
 @Getter
 @Setter
-public class Payment {
+public class Payment extends BaseEntity {
 
-    @Id
-    @UuidGenerator
-    @Column(columnDefinition = "uuid DEFAULT gen_random_uuid()", nullable = false, updatable = false)
-    private String id =  UUID.randomUUID().toString();
+
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "order_id", nullable = false)
@@ -37,9 +34,4 @@ public class Payment {
     @Column(nullable = false)
     private PaymentStatus Status = PaymentStatus.PENDING;
 
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",nullable = false,  updatable = false)
-    private Instant createdAt;
-
-    @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false)
-    private Instant updatedAt;
 }
