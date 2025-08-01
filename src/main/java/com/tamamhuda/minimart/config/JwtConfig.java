@@ -38,7 +38,6 @@ public class JwtConfig {
     @Bean
     @Qualifier("accessTokenDecoder")
     public JwtDecoder accessTokenDecoder() {
-        System.out.println(accessSecret);
         byte[] bytes = accessSecret.getBytes();
         SecretKeySpec originalKey = new SecretKeySpec(bytes, 0, bytes.length,"HmacSHA256");
         return NimbusJwtDecoder.withSecretKey(originalKey)

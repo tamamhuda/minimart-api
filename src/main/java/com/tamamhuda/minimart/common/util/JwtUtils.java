@@ -1,6 +1,6 @@
 package com.tamamhuda.minimart.common.util;
-
-import com.tamamhuda.minimart.application.service.impl.UserDetailsServiceImpl;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -11,8 +11,10 @@ import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.ParseException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 @Component
@@ -22,7 +24,6 @@ public class JwtUtils {
     private final JwtEncoder refreshTokenEncoder;
     private final JwtDecoder accessTokenDecoder;
     private final JwtDecoder refreshTokenDecoder;
-    private final UserDetailsServiceImpl userDetailsService;
 
     @Value("${JWT_ACCESS_EXPIRATION_IN_MINUTES}")
     private long accessTokenExpiration;
@@ -34,14 +35,12 @@ public class JwtUtils {
             @Qualifier("accessTokenEncoder") JwtEncoder accessTokenEncoder,
             @Qualifier("refreshTokenEncoder") JwtEncoder refreshTokenEncoder,
             @Qualifier("accessTokenDecoder") JwtDecoder accessTokenDecoder,
-            @Qualifier("refreshTokenDecoder") JwtDecoder refreshTokenDecoder,
-            UserDetailsServiceImpl userDetailsService
+            @Qualifier("refreshTokenDecoder") JwtDecoder refreshTokenDecoder
     ) {
         this.accessTokenEncoder = accessTokenEncoder;
         this.refreshTokenEncoder = refreshTokenEncoder;
         this.accessTokenDecoder = accessTokenDecoder;
         this.refreshTokenDecoder = refreshTokenDecoder;
-        this.userDetailsService = userDetailsService;
     }
 
 
@@ -77,56 +76,67 @@ public class JwtUtils {
     }
 
 
-    public String extractUsername(String token) throws ResponseStatusException {
+    private Jwt decodeAccessToken(String accessToken) {
         try {
-            boolean isTokenExpired = isAccessTokenExpired(token);
-            if (isTokenExpired) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Access token is expired");
-            }
-            return accessTokenDecoder.decode(token).getSubject();
+            return accessTokenDecoder.decode(accessToken);
         } catch (JwtException e) {
-            System.out.println(e.getMessage());
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Invalid access token");
+            try {
+                JWTClaimsSet signedJWT = SignedJWT.parse(accessToken).getJWTClaimsSet();
+                boolean isTokenExpired = signedJWT.getExpirationTime().before(new Date());
+
+                if (!isTokenExpired) {
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is expired");
+                }
+
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is invalid");
+
+            } catch (ParseException er) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is invalid");
+
+            }
         }
+    }
+
+    private Jwt decodeRefreshToken(String refreshToken) {
+        try {
+            return refreshTokenDecoder.decode(refreshToken);
+        } catch (JwtException e) {
+            try {
+                JWTClaimsSet signedJWT = SignedJWT.parse(refreshToken).getJWTClaimsSet();
+                boolean isTokenExpired = signedJWT.getExpirationTime().before(new Date());
+
+                if (!isTokenExpired) {
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is expired");
+                }
+
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is invalid");
+
+            } catch (ParseException er) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is invalid");
+
+            }
+        }
+    }
+
+
+    public String extractSubject(String token) throws ResponseStatusException {
+        return decodeAccessToken(token).getSubject();
     }
 
     public String extractUsernameFromRefresh(String refreshToken) throws ResponseStatusException {
         try {
-            return refreshTokenDecoder.decode(refreshToken).getSubject();
+            return decodeRefreshToken(refreshToken).getSubject();
         } catch (JwtException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
         }
     }
 
-
-    public boolean isAccessTokenExpired(String token) {
-        Instant expiresAt = accessTokenDecoder.decode(token).getExpiresAt();
-        return expiresAt != null && expiresAt.isBefore(Instant.now());
+    public Instant extractAccessTokenExpiresAt(String accessToken) throws ResponseStatusException {
+        return decodeAccessToken(accessToken).getExpiresAt();
     }
 
-    public boolean isAccessTokenValid(String token, UserDetails userDetails) {
-        return extractUsername(token).equals(userDetails.getUsername()) && !isAccessTokenExpired(token);
+    public Instant extractRefreshTokenExpiresAt(String refreshToken) throws ResponseStatusException {
+        return decodeRefreshToken(refreshToken).getExpiresAt();
     }
 
-    public boolean isRefreshTokenExpired(String token) {
-        Instant expiresAt = refreshTokenDecoder.decode(token).getExpiresAt();
-        return expiresAt != null && expiresAt.isBefore(Instant.now());
-    }
-
-    public boolean isRefreshTokenValid(String token, UserDetails userDetails) {
-        String username = refreshTokenDecoder.decode(token).getSubject();
-        return username.equals(userDetails.getUsername()) && !isRefreshTokenExpired(token);
-    }
-
-
-    public String issueNewAccessToken(String refreshToken) throws ResponseStatusException {
-        String username = extractUsernameFromRefresh(refreshToken);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-        if (!isRefreshTokenValid(refreshToken, userDetails)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token expired or invalid");
-        }
-
-        return generateAccessToken(userDetails);
-    }
 }
