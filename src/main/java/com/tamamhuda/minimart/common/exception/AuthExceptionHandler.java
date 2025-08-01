@@ -28,7 +28,7 @@ public class AuthExceptionHandler implements AuthenticationEntryPoint {
         ErrorResponseDto errorResponse = ErrorResponseDto.builder()
                 .statusCode(response.getStatus())
                 .message(authException.getMessage())
-                .error(authException.getLocalizedMessage())
+                .error(authException.getClass().getSimpleName())
                 .path(request.getRequestURI())
                 .build();
 

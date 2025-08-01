@@ -10,6 +10,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -124,18 +125,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, statusCode);
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponseDto> handleAllExceptions(Exception ex, HttpServletRequest request) {
-        final String exceptionName = ex.getClass().getSimpleName();
 
         ErrorResponseDto errorResponse = ErrorResponseDto.builder()
-                .statusCode(exceptionName.equals(UnauthorizedException.class.getSimpleName()) ? HttpStatus.UNAUTHORIZED.value() : HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
                 .message( ex.getMessage())
-                .error(Map.of("exception", ex.getClass().getSimpleName()))
+                .error(ex.getClass().getSimpleName())
                 .path(request.getRequestURI())
                 .build();
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
 

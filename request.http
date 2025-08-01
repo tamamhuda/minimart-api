@@ -1,6 +1,6 @@
 ### server health check -> protect endpoint
 GET http://localhost:8080/api/v1/healthz
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidGFtYW1odWRhIiwiZXhwIjoxNzUzODM0MDk3LCJpYXQiOjE3NTM4MzM3OTcsInJvbGVzIjpbIlJPTEVfQ1VTVE9NRVIiXX0.nGc5TTXZls7TkZA-msL3Jz6nvMz102Kg9xN3J5hkz8Q
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidGFtYW1odWRhIiwiZXhwIjoxNzU0MDQxNDkyLCJpYXQiOjE3NTQwNDExOTIsInJvbGVzIjpbIlJPTEVfQ1VTVE9NRVIiXX0.MGy3FtL4vxBlVTPtvIMFHLE9MFjL4Gd4UEAE8UfJ2vM
 
 ### test dto validation
 POST http://localhost:8080/api/v1/test/1?filter=
@@ -35,14 +35,14 @@ Content-Type: application/json
 
 ### auth current user authenticated
 GET http://localhost:8080/api/v1/auth/me
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidGFtYW1odWRhIiwiZXhwIjoxNzU0MDA4MzA0LCJpYXQiOjE3NTQwMDgwMDQsInJvbGVzIjpbIlJPTEVfQ1VTVE9NRVIiXX0.ZGCDjtsi5VLo4gcCVMKPRMCNvWt3e9S71zTn3Ym54XQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidGFtYW1odWRhIiwiZXhwIjoxNzU0MDMyNjEwLCJpYXQiOjE3NTQwMzIzMTAsInJvbGVzIjpbIlJPTEVfQ1VTVE9NRVIiXX0.epY_tjwwBXHx2ZQOcdodjdm7zbo7RK1BffHCdQyB2z0
 
 ### refresh access token
 POST http://localhost:8080/api/v1/auth/refresh
 Content-Type: application/json
 
 {
-    "token": "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidGFtYW1odWRhIiwiZXhwIjoxNzU0NjE0NTg1LCJpYXQiOjE3NTQwMDk3ODV9.p-H873--LVNJ8cufm6MbEKwtbcL3NWOfYKxB_oBdk4E"
+    "token": "eyJhbGcsadasdiOiJIUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidGFtYW1odWRhIiwiZXhwIjoxNzU0NjE0NTg1LCJpYXQiOjE3NTQwMDk3ODV9.p-H873--LVNJ8cufm6MbEKwtbcL3NWOfYKxB_oBdk4E"
 }
 
 ### auth logout
@@ -50,5 +50,5 @@ POST http://localhost:8080/api/v1/auth/logout
 Content-Type: application/json
 
 {
-  "token": "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidGFtYW1odWRhIiwiZXhwIjoxNzU0MDEwMDk1LCJpYXQiOjE3NTQwMDk3OTUsInJvbGVzIjpbIlJPTEVfQ1VTVE9NRVIiXX0.NX9GgMVJsUStOvUt1rFkxeQNC-BRO-adb-Z2DKTZHIw"
+  "token": "eyJhasdsdfsdbGciOiJIUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidGFtYW1odWRhIiwiZXhwIjoxNzU0MDEwMDk1LCJpYXQiOjE3NTQwMDk3OTUsInJvbGVzIjpbIlJPTEVfQ1VTVE9NRVIiXX0.NX9GgMVJsUStOvUt1rFkxeQNC-BRO-adb-Z2DKTZHIw"
 }

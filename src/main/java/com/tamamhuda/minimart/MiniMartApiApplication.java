@@ -1,6 +1,7 @@
 package com.tamamhuda.minimart;
 
 import com.tamamhuda.minimart.application.dto.TestDto;
+import com.tamamhuda.minimart.common.annotation.RequiredRoles;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -20,11 +21,12 @@ import java.util.Map;
 @RestController
 @Validated
 @SpringBootApplication
-@EntityScan("com.tamamhuda.minimart.domain.entity")
 public class MiniMartApiApplication {
 
-	@PreAuthorize("hasRole('CUSTOMER')")
+
 	@GetMapping("/healthz")
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequiredRoles({"ADMIN"})
 	public ResponseEntity<Map<String, Object>> healthz() {
 		Map<String, Object> response = new HashMap<>();
 		response.put("status", HttpStatus.OK.value());
