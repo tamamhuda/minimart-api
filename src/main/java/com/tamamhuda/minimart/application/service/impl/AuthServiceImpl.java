@@ -7,13 +7,10 @@ import com.tamamhuda.minimart.application.service.AuthService;
 import com.tamamhuda.minimart.application.service.JwtService;
 import com.tamamhuda.minimart.common.exception.UnauthorizedException;
 import com.tamamhuda.minimart.common.util.JwtUtils;
-import com.tamamhuda.minimart.domain.entity.Session;
 import com.tamamhuda.minimart.domain.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 

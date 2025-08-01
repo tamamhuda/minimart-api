@@ -1,21 +1,14 @@
 package com.tamamhuda.minimart.application.service;
 
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.JWTParser;
-import com.nimbusds.jwt.SignedJWT;
 import com.tamamhuda.minimart.application.service.impl.SessionServiceImpl;
 import com.tamamhuda.minimart.common.util.JwtUtils;
-import com.tamamhuda.minimart.domain.entity.Session;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.text.ParseException;
-import java.util.Date;
 
 
 @RequiredArgsConstructor
