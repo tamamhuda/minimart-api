@@ -1,9 +1,6 @@
 package com.tamamhuda.minimart.api.v1.controller;
 
-import com.tamamhuda.minimart.application.dto.LoginRequestDto;
-import com.tamamhuda.minimart.application.dto.RegisterRequestDto;
-import com.tamamhuda.minimart.application.dto.TokenResponseDto;
-import com.tamamhuda.minimart.application.dto.UserDto;
+import com.tamamhuda.minimart.application.dto.*;
 import com.tamamhuda.minimart.application.service.impl.AuthServiceImpl;
 import com.tamamhuda.minimart.common.annotation.CurrentUser;
 import com.tamamhuda.minimart.common.exception.UnauthorizedException;
@@ -11,7 +8,6 @@ import com.tamamhuda.minimart.domain.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,5 +32,16 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<UserDto> me(@CurrentUser User user) {
         return authService.me(user);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<RefreshResponseDto> refresh(@Valid @RequestBody TokenRequest request) {
+        return authService.refresh(request);
+
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?>  logout(@Valid @RequestBody TokenRequest request) {
+        return authService.logout(request);
     }
 }

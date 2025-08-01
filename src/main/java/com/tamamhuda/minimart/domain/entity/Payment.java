@@ -18,7 +18,6 @@ import java.util.UUID;
 public class Payment extends BaseEntity {
 
 
-
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "order_id", nullable = false)
     @JsonIgnore

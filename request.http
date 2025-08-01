@@ -16,7 +16,7 @@ Content-Type: application/json
 
 {
   "username": "tamamhda@gmail.com",
-  "password": "passwordd"
+  "password": "password"
 
 }
 
@@ -35,4 +35,20 @@ Content-Type: application/json
 
 ### auth current user authenticated
 GET http://localhost:8080/api/v1/auth/me
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidGFtYW1odWRhIiwiZXhwIjoxNzUzOTA4MjEwLCJpYXQiOjE3NTM5MDc5MTAsInJvbGVzIjpbIlJPTEVfQ1VTVE9NRVIiXX0.UhY_2v3Ray_5cPaoVXse38-n1HB1gxbi5M3ugKOzh6s
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidGFtYW1odWRhIiwiZXhwIjoxNzU0MDA4MzA0LCJpYXQiOjE3NTQwMDgwMDQsInJvbGVzIjpbIlJPTEVfQ1VTVE9NRVIiXX0.ZGCDjtsi5VLo4gcCVMKPRMCNvWt3e9S71zTn3Ym54XQ
+
+### refresh access token
+POST http://localhost:8080/api/v1/auth/refresh
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidGFtYW1odWRhIiwiZXhwIjoxNzU0NjE0NTg1LCJpYXQiOjE3NTQwMDk3ODV9.p-H873--LVNJ8cufm6MbEKwtbcL3NWOfYKxB_oBdk4E"
+}
+
+### auth logout
+POST http://localhost:8080/api/v1/auth/logout
+Content-Type: application/json
+
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidGFtYW1odWRhIiwiZXhwIjoxNzU0MDEwMDk1LCJpYXQiOjE3NTQwMDk3OTUsInJvbGVzIjpbIlJPTEVfQ1VTVE9NRVIiXX0.NX9GgMVJsUStOvUt1rFkxeQNC-BRO-adb-Z2DKTZHIw"
+}
