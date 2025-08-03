@@ -44,8 +44,8 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/auth/me").authenticated()
 
-                        .requestMatchers(HttpMethod.GET,"/products/**").permitAll()
-                        .requestMatchers("/products/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/products/**").permitAll()     // allow GETs
+
 
                         .anyRequest().authenticated()
                 )

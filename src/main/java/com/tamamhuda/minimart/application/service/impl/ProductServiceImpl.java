@@ -3,19 +3,21 @@ package com.tamamhuda.minimart.application.service.impl;
 import com.tamamhuda.minimart.application.dto.ProductDto;
 import com.tamamhuda.minimart.application.dto.ProductRequestDto;
 import com.tamamhuda.minimart.application.mapper.ProductMapper;
-import com.tamamhuda.minimart.application.service.CategoryService;
 import com.tamamhuda.minimart.application.service.ProductService;
 import com.tamamhuda.minimart.domain.entity.Category;
 import com.tamamhuda.minimart.domain.entity.Product;
 import com.tamamhuda.minimart.domain.repository.ProductRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +27,7 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
-    private final CategoryService categoryService;
+    private final CategoryServiceImpl categoryService;
     private final S3ServiceImpl s3Service;
 
     @Override
@@ -126,5 +128,19 @@ public class ProductServiceImpl implements ProductService {
         Product product = validateProductImageUrl(productId, imageUrl);
 
         s3Service.proxyImage(response, "products", product.getImageUrl());
+    }
+
+    @Override
+    public ResponseEntity<Page<Product>> getProductByFilters(String categoryIdOrName, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
+        String categoryId = null;
+
+        if (categoryIdOrName != null) {
+            Category category = categoryService.getByIdOrName(categoryIdOrName);
+            categoryId = category.getId().toString();
+        }
+
+        Page<Product> products = productRepository.findByAllFilters(categoryId, minPrice, maxPrice, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 }
