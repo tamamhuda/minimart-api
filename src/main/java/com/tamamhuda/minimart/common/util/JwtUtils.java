@@ -25,10 +25,10 @@ public class JwtUtils {
     private final JwtDecoder accessTokenDecoder;
     private final JwtDecoder refreshTokenDecoder;
 
-    @Value("${JWT_ACCESS_EXPIRATION_IN_MINUTES}")
+    @Value("${spring.security.jwt.access.expiration-in-minutes}")
     private long accessTokenExpiration;
 
-    @Value("${JWT_REFRESH_EXPIRATION_IN_DAYS}")
+    @Value("${spring.security.jwt.refresh.expiration-in-days}")
     private long refreshTokenExpiration;
 
     public JwtUtils(

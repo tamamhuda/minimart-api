@@ -24,3 +24,26 @@ spring:
     user:
       name: admin
       password: admin
+
+    jwt:
+      access:
+        secret-key: ${JWT_ACCESS_SECRET}
+        expiration-in-minutes: ${JWT_ACCESS_EXPIRATION_IN_MINUTES}
+      refresh:
+        secret-key: ${JWT_REFRESH_SECRET}
+        expiration-in-days: ${JWT_REFRESH_EXPIRATION_IN_DAYS}
+
+  cloud:
+    config:
+      aws:
+        credentials:
+          access-key: ${AWS_ACCESS_KEY}
+          secret-key: ${AWS_SECRET_KEY}
+        s3:
+          region: ${AWS_S3_REGION}
+          bucket: ${AWS_S3_BUCKET}
+
+
+
+
+

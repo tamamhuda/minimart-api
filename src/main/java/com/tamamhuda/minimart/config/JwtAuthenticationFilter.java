@@ -1,6 +1,6 @@
 package com.tamamhuda.minimart.config;
 
-import com.tamamhuda.minimart.application.service.JwtService;
+import com.tamamhuda.minimart.application.service.impl.JwtServiceImpl;
 import com.tamamhuda.minimart.application.service.impl.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,7 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final HandlerExceptionResolver handlerExceptionResolver;
-    private final JwtService jwtService;
+    private final JwtServiceImpl jwtService;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -33,6 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authorizationHeader = request.getHeader("Authorization");
 
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            request.setAttribute("auth_error_message", "Missing or invalid Authorization header ");
             filterChain.doFilter(request, response);
             return;
         }

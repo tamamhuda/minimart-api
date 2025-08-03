@@ -25,8 +25,12 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Float price;
 
-    @Column(nullable = false)
-    private Integer stock_quantity = 1;
+
+    @Column(name = "stock_quantity",nullable = false)
+    private Integer stockQuantity = 1;
+
+    @Column(name = "image_url")
+    private String imageUrl;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)

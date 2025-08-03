@@ -16,10 +16,10 @@ import javax.crypto.spec.SecretKeySpec;
 @Configuration
 public class JwtConfig {
 
-    @Value("${JWT_ACCESS_SECRET}")
+    @Value("${spring.security.jwt.access.secret-key}")
     private String accessSecret;
 
-    @Value("${JWT_REFRESH_SECRET}")
+    @Value("${spring.security.jwt.refresh.secret-key}")
     private String refreshSecret;
 
     @Bean
