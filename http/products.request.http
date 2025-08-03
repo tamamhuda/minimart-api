@@ -27,8 +27,8 @@ Content-Type: application/json
 ### delete product
 DELETE {{baseUrl}}/{{version}}/products/0e407594-3707-47a5-b849-b51d95347e59
 
-### get all product with optional by category
-GET {{baseUrl}}/{{version}}/products
+### get all product with optional filter -> category, minPrice, maxPrice
+GET {{baseUrl}}/{{version}}/products?category="skincare"
 
 ### upload product image
 POST http://localhost:8080/api/v1/products/20ccdbc9-78aa-4b1c-9336-36a30a153237/upload

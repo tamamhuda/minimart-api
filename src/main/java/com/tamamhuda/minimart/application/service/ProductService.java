@@ -4,9 +4,12 @@ import com.tamamhuda.minimart.application.dto.ProductDto;
 import com.tamamhuda.minimart.application.dto.ProductRequestDto;
 import com.tamamhuda.minimart.domain.entity.Product;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,4 +32,6 @@ public interface ProductService {
     public ResponseEntity<ProductDto> uploadProductImage(MultipartFile file, UUID productId);
 
     public void proxyProductImage(HttpServletResponse response, UUID productId, String imageUrl);
+
+    public ResponseEntity<Page<Product>> getProductByFilters(String categoryIdOrName, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
 }

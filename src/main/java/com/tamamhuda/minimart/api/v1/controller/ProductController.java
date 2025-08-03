@@ -6,15 +6,21 @@ import com.tamamhuda.minimart.application.dto.ProductRequestDto;
 import com.tamamhuda.minimart.application.service.impl.ProductServiceImpl;
 import com.tamamhuda.minimart.common.annotation.RequiredRoles;
 import com.tamamhuda.minimart.common.validation.group.Create;
+import com.tamamhuda.minimart.domain.entity.Product;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,8 +60,14 @@ public class ProductController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<ProductDto>> getAllProducts(@RequestParam(name = "category", required = false) String categoryIdOrName){
-        return productService.getAllProducts(categoryIdOrName);
+    public ResponseEntity<Page<Product>> getProductByAllFilters(
+            @RequestParam(name = "category", required = false) String category,
+            @RequestParam(name = "minPrice", required = false) BigDecimal minPrice,
+            @RequestParam(name = "maxPrice", required = false) BigDecimal maxPrice,
+            Pageable pageable
+            ){
+
+        return productService.getProductByFilters(category, minPrice, maxPrice, pageable);
     }
 
     @PostMapping("/{product_id}/upload")
