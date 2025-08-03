@@ -24,7 +24,7 @@ public class AuthServiceImpl implements AuthService {
     private final RegisterRequestMapper registerRequestMapper;
     private final UserDtoMapper userDtoMapper;
     private final SessionServiceImpl sessionService;
-    private final JwtService jwtService;
+    private final JwtServiceImpl jwtService;
 
     public ResponseEntity<TokenResponseDto> login(LoginRequestDto request) throws UnauthorizedException {
         UserDetails user = userService.validateCredentials(request.getUsername(), request.getPassword());

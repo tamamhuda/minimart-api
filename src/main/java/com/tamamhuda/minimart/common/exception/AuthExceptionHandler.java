@@ -22,13 +22,19 @@ public class AuthExceptionHandler implements AuthenticationEntryPoint {
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
 
+        String errorMessage = (String) request.getAttribute("auth_error_message");
+        if (errorMessage == null || errorMessage.isBlank()) {
+            errorMessage = "Authentication required";
+        }
+
+
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
 
         ErrorResponseDto errorResponse = ErrorResponseDto.builder()
                 .statusCode(response.getStatus())
-                .message(authException.getMessage())
-                .error(authException.getClass().getSimpleName())
+                .message(errorMessage)
+                .error("401 Unauthorized")
                 .path(request.getRequestURI())
                 .build();
 

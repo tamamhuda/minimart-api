@@ -1,0 +1,43 @@
+
+### auth login
+POST http://localhost:8080/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "username": "tamamhda@gmail.com",
+  "password": "password"
+
+}
+
+### auth register user
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "full_name": "tamam huda",
+  "username": "tamamhuda",
+  "email": "tamamhda@gmail.com",
+  "password": "password",
+  "confirm_password": "password"
+
+}
+
+### auth current user authenticated
+GET http://localhost:8080/api/v1/auth/me
+Authorization: Bearer {{token.access_token}}
+
+### refresh access token
+POST http://localhost:8080/api/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "token": "{{token.access_token}}"
+}
+
+### auth logout
+POST http://localhost:8080/api/v1/auth/logout
+Content-Type: application/json
+
+{
+  "token": "{{token.access_token}}"
+}

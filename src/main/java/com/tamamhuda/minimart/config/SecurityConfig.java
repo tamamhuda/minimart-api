@@ -5,6 +5,7 @@ import com.tamamhuda.minimart.common.exception.AuthExceptionHandler;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -42,6 +43,9 @@ public class SecurityConfig {
                         .requestMatchers("/test/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/auth/me").authenticated()
+
+                        .requestMatchers(HttpMethod.GET,"/products/**").permitAll()
+                        .requestMatchers("/products/**").authenticated()
 
                         .anyRequest().authenticated()
                 )

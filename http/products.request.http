@@ -1,0 +1,45 @@
+
+### create product
+POST {{baseUrl}}/{{version}}/products
+Content-Type: application/json
+Authorization: Bearer {{token.access_token}}
+
+{
+  "name": "Product A",
+  "description": "Best #1 product",
+  "stock_quantity": 1,
+  "price": 20000,
+  "category": "skincare"
+}
+
+### get product by id
+GET {{baseUrl}}/{{version}}/products/2ce2eea4-738f-47be-9ac2-7b6e7d596065
+
+### update product
+PUT {{baseUrl}}/{{version}}/products/0e407594-3707-47a5-b849-b51d95347e59
+Content-Type: application/json
+
+{
+  "price": 25000,
+  "image_url": "https://dummy-image-url.png"
+}
+
+### delete product
+DELETE {{baseUrl}}/{{version}}/products/0e407594-3707-47a5-b849-b51d95347e59
+
+### get all product with optional by category
+GET {{baseUrl}}/{{version}}/products
+
+### upload product image
+POST http://localhost:8080/api/v1/products/20ccdbc9-78aa-4b1c-9336-36a30a153237/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="sample.jpg"
+Content-Type: image/jpeg
+
+< ./sample.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### stream product image
+GET http://localhost:8080/api/v1/products/20ccdbc9-78aa-4b1c-9336-36a30a153237/images/0d613ea3-1c96-4eea-b3d0-91f82684ad5f-sample.jpg
