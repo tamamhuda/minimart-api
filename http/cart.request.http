@@ -1,0 +1,30 @@
+### add cart item
+POST {{baseUrl}}/{{version}}/cart/items
+Content-Type: application/json
+Authorization: Bearer {{token.access_token}}
+
+{
+  "product_id": "56fc2a93-3c2d-45c7-91ae-fe1571cbc43d",
+  "quantity": 2
+}
+
+### update cart item
+PUT {{baseUrl}}/{{version}}/cart/items/45a51d01-631e-4fcf-9a7c-335790939eba
+Content-Type: application/json
+Authorization: Bearer {{token.access_token}}
+
+{
+  "quantity": 2
+}
+
+### get user cart
+GET {{baseUrl}}/{{version}}/cart
+Authorization: Bearer {{token.access_token}}
+
+### get cart item
+GET {{baseUrl}}/{{version}}/cart/items/0bc462be-e2b1-48fd-95b1-84cd38fe87ba
+Authorization: Bearer {{token.access_token}}
+
+### delete cart item from cart
+DELETE {{baseUrl}}/{{version}}/cart/items/4a3ca507-a000-4630-885d-da24b48885e4
+Authorization: Bearer {{token.access_token}}

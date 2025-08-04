@@ -5,10 +5,10 @@ Content-Type: application/json
 Authorization: Bearer {{token.access_token}}
 
 {
-  "name": "Product A",
-  "description": "Best #1 product",
+  "name": "Product B",
+  "description": "Best #2 product",
   "stock_quantity": 1,
-  "price": 20000,
+  "price": 25000,
   "category": "skincare"
 }
 

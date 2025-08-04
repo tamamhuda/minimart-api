@@ -17,8 +17,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity(debug = true)
-@EnableMethodSecurity()
+@EnableWebSecurity
+@EnableMethodSecurity
 @AllArgsConstructor
 public class SecurityConfig {
 
@@ -53,6 +53,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/categories/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/categories/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/categories/**").authenticated()
+
+                        .requestMatchers("/cart/**").authenticated()
 
                         .anyRequest().authenticated()
                 )

@@ -23,5 +23,4 @@ public class BaseDto {
     @JsonProperty("updated_at")
     private Instant updatedAt;
 
-
 }

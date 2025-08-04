@@ -5,18 +5,14 @@ import com.tamamhuda.minimart.domain.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.UuidGenerator;
 
-import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "orders")
 @Getter
 @Setter
 public class Order extends BaseEntity {
-
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
