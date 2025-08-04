@@ -1,0 +1,139 @@
+package com.tamamhuda.minimart.application.service.impl;
+
+import com.tamamhuda.minimart.application.dto.CartDto;
+import com.tamamhuda.minimart.application.dto.CartItemDto;
+import com.tamamhuda.minimart.application.dto.CartItemRequestDto;
+import com.tamamhuda.minimart.application.mapper.CartItemMapper;
+import com.tamamhuda.minimart.application.mapper.CartItemRequestMapper;
+import com.tamamhuda.minimart.application.mapper.CartMapper;
+import com.tamamhuda.minimart.application.service.CartService;
+import com.tamamhuda.minimart.domain.entity.Cart;
+import com.tamamhuda.minimart.domain.entity.CartItem;
+import com.tamamhuda.minimart.domain.entity.Product;
+import com.tamamhuda.minimart.domain.entity.User;
+import com.tamamhuda.minimart.domain.repository.CartItemRepository;
+import com.tamamhuda.minimart.domain.repository.CartRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.time.Instant;
+import java.util.Optional;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class CartServiceImpl implements CartService {
+
+    private final CartItemRequestMapper cartItemRequestMapper;
+    private final CartMapper cartMapper;
+    private final CartItemMapper cartItemMapper;
+    private final CartItemRepository cartItemRepository;
+    private final CartRepository cartRepository;
+    private final ProductServiceImpl productService;
+
+    @Override
+    public ResponseEntity<CartItemDto> getCartItem(UUID cartItemId) {
+        CartItem cartItem = getCartItemById(cartItemId);
+        return ResponseEntity.status(HttpStatus.OK).body(cartItemMapper.toDto(cartItem));
+    }
+
+
+    private Cart createCart(User user) {
+        Cart cart = new Cart();
+        cart.setUser(user);
+        return cartRepository.save(cart);
+    }
+
+    private CartItem createCartItem(CartItemRequestDto request, Cart cart) {
+        CartItem cartItem = cartItemRequestMapper.toEntity(request);
+        Product product = productService.findById(UUID.fromString(request.getProductId()));
+        cartItem.setProduct(product);
+        cartItem.setCart(cart);
+
+        return cartItemRepository.save(cartItem);
+    }
+
+    private Optional<CartItem> getCartItemByProductId(UUID productId) {
+        return cartItemRepository.findByProductId(productId);
+    }
+
+    private CartItem getCartItemById(UUID cartId) {
+        return cartItemRepository.findById(cartId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart Item Not Found")
+        );
+    }
+
+
+    private CartItem getOrCreateCartItem(CartItemRequestDto request, Cart cart) {
+        UUID productId = UUID.fromString(request.getProductId());
+        Optional<CartItem> cartItem = getCartItemByProductId(productId);
+        if (cartItem.isEmpty()) {
+            cartItem = Optional.of(createCartItem(request, cart));
+        }
+        return cartItem.get();
+
+    }
+
+    private CartItem getOrUpdateCartItem(CartItemRequestDto request, UUID cartItemId) {
+        CartItem cartItem = getCartItemById(cartItemId);
+        cartItemRequestMapper.updateFromRequestDto(request, cartItem);
+        cartItem.setUpdatedAt(Instant.now());
+        return cartItemRepository.save(cartItem);
+    }
+
+    private Cart getOrCreateCart(User user) {
+        Optional<Cart> cart = cartRepository.findByUserId(user.getId());
+
+        if (cart.isEmpty()) {
+            cart = Optional.of(createCart(user));
+        }
+
+        return cart.get();
+    }
+
+    @Override
+    public ResponseEntity<CartDto> addCartItem(User user, CartItemRequestDto request) {
+        Cart cart = getOrCreateCart(user);
+        log.info("Cart: {}", cart.getId());
+        CartItem cartItem = getOrCreateCartItem(request, cart);
+        log.info("CartItem: {}", cartItem.getId());
+
+        cart.AddItem(cartItem);
+        cart.setUpdatedAt(Instant.now());
+
+        Cart updatedCart = cartRepository.save(cart);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(cartMapper.toDto(updatedCart));
+    }
+
+    @Override
+    public ResponseEntity<CartDto> removeCartItem(User user, UUID cartItemId) {
+        Cart userCart = getOrCreateCart(user);
+        CartItem cartItem = getCartItemById(cartItemId);
+
+        userCart.RemoveItem(cartItem);
+        cartItem.setUpdatedAt(Instant.now());
+        cartRepository.save(userCart);
+
+        cartItemRepository.delete(cartItem);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<CartItemDto> updateCartItem(UUID cartItemId, CartItemRequestDto request) {
+        CartItem cartItem = getOrUpdateCartItem(request, cartItemId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(cartItemMapper.toDto(cartItem));
+    }
+
+    @Override
+    public ResponseEntity<CartDto> getCart(User user) {
+        return ResponseEntity.status(HttpStatus.OK).body(cartMapper.toDto(getOrCreateCart(user)));
+    }
+}
