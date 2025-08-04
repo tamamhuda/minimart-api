@@ -1,10 +1,9 @@
 package com.tamamhuda.minimart.application.service.impl;
 
 import com.tamamhuda.minimart.application.dto.*;
-import com.tamamhuda.minimart.application.mapper.RegisterRequestMapper;
-import com.tamamhuda.minimart.application.mapper.UserDtoMapper;
+import com.tamamhuda.minimart.application.mapper.UserRequestMapper;
+import com.tamamhuda.minimart.application.mapper.UserMapper;
 import com.tamamhuda.minimart.application.service.AuthService;
-import com.tamamhuda.minimart.application.service.JwtService;
 import com.tamamhuda.minimart.common.exception.UnauthorizedException;
 import com.tamamhuda.minimart.common.util.JwtUtils;
 import com.tamamhuda.minimart.domain.entity.User;
@@ -21,8 +20,8 @@ public class AuthServiceImpl implements AuthService {
 
     private final JwtUtils jwtUtils;
     private final UserServiceImpl userService;
-    private final RegisterRequestMapper registerRequestMapper;
-    private final UserDtoMapper userDtoMapper;
+    private final UserRequestMapper userRequestMapper;
+    private final UserMapper userMapper;
     private final SessionServiceImpl sessionService;
     private final JwtServiceImpl jwtService;
 
@@ -43,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     public ResponseEntity<TokenResponseDto> register(RegisterRequestDto request) {
-        User rquestUser = registerRequestMapper.toEntity(request);
+        User rquestUser = userRequestMapper.toEntity(request);
 
         User user = userService.createUser(rquestUser);
 
@@ -61,7 +60,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<UserDto> me(User user) throws UnauthorizedException {
-        return ResponseEntity.status(HttpStatus.OK).body(userDtoMapper.toDto(user));
+        return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDto(user));
     }
 
     @Override

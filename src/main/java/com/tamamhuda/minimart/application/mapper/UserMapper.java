@@ -5,5 +5,5 @@ import com.tamamhuda.minimart.domain.entity.User;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface UserDtoMapper extends GenericDtoMapper<UserDto, User>{
+public interface UserMapper extends GenericDtoMapper<UserDto, User>{
 }
