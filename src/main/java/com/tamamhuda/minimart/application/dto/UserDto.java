@@ -10,7 +10,6 @@ import lombok.Setter;
 
 
 @AllArgsConstructor
-@RequiredArgsConstructor
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.ALWAYS)
