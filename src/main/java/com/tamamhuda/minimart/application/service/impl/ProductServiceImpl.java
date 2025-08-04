@@ -3,6 +3,7 @@ package com.tamamhuda.minimart.application.service.impl;
 import com.tamamhuda.minimart.application.dto.ProductDto;
 import com.tamamhuda.minimart.application.dto.ProductRequestDto;
 import com.tamamhuda.minimart.application.mapper.ProductMapper;
+import com.tamamhuda.minimart.application.mapper.ProductRequestMapper;
 import com.tamamhuda.minimart.application.service.ProductService;
 import com.tamamhuda.minimart.domain.entity.Category;
 import com.tamamhuda.minimart.domain.entity.Product;
@@ -29,24 +30,25 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final CategoryServiceImpl categoryService;
     private final S3ServiceImpl s3Service;
+    private final ProductRequestMapper productRequestMapper;
 
     @Override
     public ResponseEntity<ProductDto> create(ProductRequestDto request) {
-        Product requestProduct = productMapper.toEntity(request);
+        Product requestProduct = productRequestMapper.toEntity(request);
 
         Category category = categoryService.getByIdOrName(request.getCategoryIdOrName());
 
         requestProduct.setCategory(category);
         Product product = productRepository.save(requestProduct);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(productMapper.toResponseDto(product));
+        return ResponseEntity.status(HttpStatus.CREATED).body(productMapper.toDto(product));
     }
 
     @Override
     public ResponseEntity<ProductDto> update(ProductRequestDto request, UUID productId) {
         Product product = findById(productId);
 
-        productMapper.updateFromDto(request, product);
+        productRequestMapper.updateFromRequestDto(request, product);
 
         if (request.getCategoryIdOrName() != null) {
             Category category = categoryService.getByIdOrName(request.getCategoryIdOrName());
@@ -57,9 +59,8 @@ public class ProductServiceImpl implements ProductService {
 
         Product updatedProduct = productRepository.save(product);
 
-        return ResponseEntity.status(HttpStatus.OK).body(productMapper.toResponseDto(updatedProduct));
+        return ResponseEntity.status(HttpStatus.OK).body(productMapper.toDto(updatedProduct));
     }
-
     @Override
     public ResponseEntity<?> deleteProductById(UUID productId) {
         Product product = findById(productId);
@@ -76,7 +77,7 @@ public class ProductServiceImpl implements ProductService {
     public ResponseEntity<ProductDto> getProductById(UUID id) {
         Product product = findById(id);
 
-        return ResponseEntity.status(HttpStatus.OK).body(productMapper.toResponseDto(product));
+        return ResponseEntity.status(HttpStatus.OK).body(productMapper.toDto(product));
     }
 
     @Override
@@ -89,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
 
         products = productRepository.findAll();
 
-        return ResponseEntity.status(HttpStatus.OK).body((productMapper.toResponseDto(products)));
+        return ResponseEntity.status(HttpStatus.OK).body((productMapper.toDto(products)));
     }
 
     @Override
@@ -98,7 +99,7 @@ public class ProductServiceImpl implements ProductService {
 
         List<Product> products = productRepository.findByCategoryId(category.getId());
 
-        return ResponseEntity.status(HttpStatus.OK).body((productMapper.toResponseDto(products)));
+        return ResponseEntity.status(HttpStatus.OK).body((productMapper.toDto(products)));
     }
 
     @Override
@@ -110,7 +111,7 @@ public class ProductServiceImpl implements ProductService {
         product.setUpdatedAt(Instant.now());
         productRepository.save(product);
 
-        return ResponseEntity.status(HttpStatus.OK).body(productMapper.toResponseDto(product));
+        return ResponseEntity.status(HttpStatus.OK).body(productMapper.toDto(product));
     }
 
     private Product validateProductImageUrl(UUID productId, String imageUrl) {

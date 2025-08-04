@@ -3,12 +3,11 @@ package com.tamamhuda.minimart.application.service.impl;
 import com.tamamhuda.minimart.application.dto.CategoryDto;
 import com.tamamhuda.minimart.application.dto.CategoryRequestDto;
 import com.tamamhuda.minimart.application.mapper.CategoryMapper;
+import com.tamamhuda.minimart.application.mapper.CategoryRequestMapper;
 import com.tamamhuda.minimart.application.service.CategoryService;
 import com.tamamhuda.minimart.domain.entity.Category;
 import com.tamamhuda.minimart.domain.repository.CategoryRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.apache.bcel.generic.RET;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,6 +22,7 @@ import java.util.UUID;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private final CategoryRequestMapper categoryRequestMapper;
 
 
     @Override
@@ -57,7 +57,7 @@ public class CategoryServiceImpl implements CategoryService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Category name already exists");
         }
 
-        Category category = categoryMapper.toEntityFromRequest(request);
+        Category category = categoryRequestMapper.toEntity(request);
         Category savedCategory = categoryRepository.save(category);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryMapper.toDto(savedCategory));
@@ -67,7 +67,7 @@ public class CategoryServiceImpl implements CategoryService {
     public ResponseEntity<CategoryDto> update(CategoryRequestDto request, UUID categoryId) {
         Category category = getById(categoryId);
 
-        categoryMapper.updateEntityFromRequest(request, category);
+        categoryRequestMapper.updateFromRequestDto(request, category);
         category.setUpdatedAt(Instant.now());
         Category updatedCategory = categoryRepository.save(category);
 
