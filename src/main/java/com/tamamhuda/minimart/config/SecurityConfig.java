@@ -44,8 +44,15 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/auth/me").authenticated()
 
-                        .requestMatchers(HttpMethod.GET, "/products/**").permitAll()     // allow GETs
+                        .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/products/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/products/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/products/**").authenticated()
 
+                        .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/categories/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/categories/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/categories/**").authenticated()
 
                         .anyRequest().authenticated()
                 )

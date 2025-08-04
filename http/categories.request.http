@@ -1,0 +1,26 @@
+### create category
+POST {{baseUrl}}/{{version}}/categories
+Content-Type: application/json
+Authorization: Bearer {{token.access_token}}
+
+{
+  "name": "skincare",
+  "description": "Skincare Product"
+}
+
+### get all categories
+GET {{baseUrl}}/{{version}}/categories
+
+### update category
+PUT {{baseUrl}}/{{version}}/categories/1d4d5416-380f-41e0-8b19-2a70ee3b2799
+Content-Type: application/json
+Authorization: Bearer {{token.access_token}}
+
+{
+  "description": "Skincare Products"
+}
+
+### delete category
+DELETE {{baseUrl}}/{{version}}/categories/1d4d5416-380f-41e0-8b19-2a70ee3b2799
+Authorization: Bearer {{token.access_token}}
+
