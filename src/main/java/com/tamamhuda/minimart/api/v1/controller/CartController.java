@@ -27,7 +27,7 @@ public class CartController {
     @PostMapping("/items")
     @PreAuthorize("hasRole('CUSTOMER')")
     @RequiredRoles({"CUSTOMER"})
-    public ResponseEntity<CartDto> addItemToCart(@CurrentUser User user, @Validated(Create.class) @RequestBody CartItemRequestDto request) {
+    public ResponseEntity<CartItemDto> addItemToCart(@CurrentUser User user, @Validated(Create.class) @RequestBody CartItemRequestDto request) {
         return cartService.addCartItem(user, request);
     }
 

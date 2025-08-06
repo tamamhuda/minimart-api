@@ -4,12 +4,12 @@ Content-Type: application/json
 Authorization: Bearer {{token.access_token}}
 
 {
-  "product_id": "56fc2a93-3c2d-45c7-91ae-fe1571cbc43d",
-  "quantity": 2
+  "product_id": "9c1840c6-778a-406d-b2c5-ab77c6cbc9af",
+  "quantity": 3
 }
 
 ### update cart item
-PUT {{baseUrl}}/{{version}}/cart/items/45a51d01-631e-4fcf-9a7c-335790939eba
+PUT {{baseUrl}}/{{version}}/cart/items/f0ef0afc-1e82-4abf-bc32-dafb015c9890
 Content-Type: application/json
 Authorization: Bearer {{token.access_token}}
 

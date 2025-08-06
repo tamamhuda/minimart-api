@@ -75,68 +75,43 @@ public class JwtUtils {
                 .getTokenValue();
     }
 
-
-    private Jwt decodeAccessToken(String accessToken) {
+    private Jwt decodeToken(String token, JwtDecoder decoder, String tokenType) {
         try {
-            return accessTokenDecoder.decode(accessToken);
+            return decoder.decode(token);
         } catch (JwtException e) {
             try {
-                JWTClaimsSet signedJWT = SignedJWT.parse(accessToken).getJWTClaimsSet();
-                boolean isTokenExpired = signedJWT.getExpirationTime().before(new Date());
+                JWTClaimsSet claims = SignedJWT.parse(token).getJWTClaimsSet();
+                boolean isExpired = claims.getExpirationTime().before(new Date());
 
-                if (!isTokenExpired) {
-                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is expired");
+                if (isExpired) {
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, tokenType + " token is expired");
+
+                } else {
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, tokenType + " token is invalid");
                 }
 
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is invalid");
-
-            } catch (ParseException er) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is invalid");
-
-            }
-        }
-    }
-
-    private Jwt decodeRefreshToken(String refreshToken) {
-        try {
-            return refreshTokenDecoder.decode(refreshToken);
-        } catch (JwtException e) {
-            try {
-                JWTClaimsSet signedJWT = SignedJWT.parse(refreshToken).getJWTClaimsSet();
-                boolean isTokenExpired = signedJWT.getExpirationTime().before(new Date());
-
-                if (!isTokenExpired) {
-                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is expired");
-                }
-
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is invalid");
-
-            } catch (ParseException er) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is invalid");
-
+            } catch (ParseException parseEx) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, tokenType + " token is malformed");
             }
         }
     }
 
 
-    public String extractSubject(String token) throws ResponseStatusException {
-        return decodeAccessToken(token).getSubject();
+    public String extractSubject(String accessToken) throws ResponseStatusException {
+        return decodeToken(accessToken, accessTokenDecoder, "Access").getSubject();
     }
 
     public String extractUsernameFromRefresh(String refreshToken) throws ResponseStatusException {
-        try {
-            return decodeRefreshToken(refreshToken).getSubject();
-        } catch (JwtException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
-        }
+            return decodeToken(refreshToken, refreshTokenDecoder, "Refresh").getSubject();
+
     }
 
     public Instant extractAccessTokenExpiresAt(String accessToken) throws ResponseStatusException {
-        return decodeAccessToken(accessToken).getExpiresAt();
+        return decodeToken(accessToken, accessTokenDecoder, "Access").getExpiresAt();
     }
 
     public Instant extractRefreshTokenExpiresAt(String refreshToken) throws ResponseStatusException {
-        return decodeRefreshToken(refreshToken).getExpiresAt();
+        return decodeToken(refreshToken, refreshTokenDecoder, "Refresh").getExpiresAt();
     }
 
 }

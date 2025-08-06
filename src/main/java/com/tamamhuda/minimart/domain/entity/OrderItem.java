@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "order_item")
 @Getter
@@ -13,7 +15,7 @@ public class OrderItem extends BaseEntity {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "order_id")
     @JsonIgnore
     private Order order;
 
@@ -26,6 +28,6 @@ public class OrderItem extends BaseEntity {
     private Integer quantity = 1;
 
     @Column(nullable = false)
-    private Float price;
+    private BigDecimal totalPrice = BigDecimal.ZERO;
 
 }

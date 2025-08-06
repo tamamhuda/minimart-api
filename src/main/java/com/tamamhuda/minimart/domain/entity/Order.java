@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,10 +26,10 @@ public class Order extends BaseEntity {
     private OrderStatus status = OrderStatus.PENDING;
 
     @Column(name = "total_price", nullable = false)
-    private Float totalPrice;
+    private BigDecimal totalPrice;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> OrderItems;
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Payment payment;
@@ -35,4 +37,19 @@ public class Order extends BaseEntity {
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Invoice invoice;
 
+    public void AddItem(OrderItem item) {
+        if (orderItems == null) {
+            orderItems = new ArrayList<>();
+        }
+        orderItems.add(item);
+        item.setOrder(this);
+    }
+
+    public void AttachPayment(Payment payment) {
+        this.payment = payment;
+    }
+
+    public void AttachInvoice(Invoice invoice) {
+        this.invoice = invoice;
+    }
 }

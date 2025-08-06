@@ -1,0 +1,19 @@
+### checkout by cart items
+POST {{baseUrl}}/{{version}}/orders/checkout
+Content-Type: application/json
+Authorization: Bearer {{token.access_token}}
+
+{
+  "cart_items_ids": [
+      "e3798d05-1d98-418f-aff5-abd0b7352da2"
+  ]
+}
+
+### get all user's orders
+GET {{baseUrl}}/{{version}}/orders
+Content-Type: application/json
+Authorization: Bearer {{token.access_token}}
+
+### get order by id
+GET {{baseUrl}}/{{version}}/orders/b34ce2af-c6cb-4579-8d97-dbdd62a1236a
+Authorization: Bearer {{token.access_token}}
