@@ -56,6 +56,8 @@ public class SecurityConfig {
 
                         .requestMatchers("/cart/**").authenticated()
 
+                        .requestMatchers("/orders/**").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider)

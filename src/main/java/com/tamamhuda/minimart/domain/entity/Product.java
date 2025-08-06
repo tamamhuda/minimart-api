@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +24,7 @@ public class Product extends BaseEntity {
     private String description;
 
     @Column(nullable = false)
-    private Float price;
+    private BigDecimal price;
 
 
     @Column(name = "stock_quantity",nullable = false)

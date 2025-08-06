@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,6 +44,11 @@ public class CartServiceImpl implements CartService {
         return ResponseEntity.status(HttpStatus.OK).body(cartItemMapper.toDto(cartItem));
     }
 
+    @Override
+    public void removeCartItems(List<CartItem> cartItems) {
+        cartItemRepository.deleteAllInBatch(cartItems);
+    }
+
 
     private Cart createCart(User user) {
         Cart cart = new Cart();
@@ -58,11 +65,21 @@ public class CartServiceImpl implements CartService {
         return cartItemRepository.save(cartItem);
     }
 
+    @Override
+    public List<CartItem> getCartItemsByIds(List<UUID> cartItemsIds) {
+        List<CartItem> cartItems = new ArrayList<>();
+        for (UUID cartItemId : cartItemsIds) {
+            CartItem cartItem = getCartItemById(cartItemId);
+            cartItems.add(cartItem);
+        }
+        return cartItems;
+    }
+
     private Optional<CartItem> getCartItemByProductId(UUID productId) {
         return cartItemRepository.findByProductId(productId);
     }
 
-    private CartItem getCartItemById(UUID cartId) {
+    public CartItem getCartItemById(UUID cartId) {
         return cartItemRepository.findById(cartId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart Item Not Found")
         );
@@ -96,19 +113,21 @@ public class CartServiceImpl implements CartService {
         return cart.get();
     }
 
-    @Override
-    public ResponseEntity<CartDto> addCartItem(User user, CartItemRequestDto request) {
-        Cart cart = getOrCreateCart(user);
-        log.info("Cart: {}", cart.getId());
-        CartItem cartItem = getOrCreateCartItem(request, cart);
-        log.info("CartItem: {}", cartItem.getId());
-
-        cart.AddItem(cartItem);
+    private CartItem saveCartItem(Cart cart, CartItem item) {
+        cart.AddItem(item);
         cart.setUpdatedAt(Instant.now());
+        cartRepository.save(cart);
+        return item;
+    }
 
-        Cart updatedCart = cartRepository.save(cart);
+    @Override
+    public ResponseEntity<CartItemDto> addCartItem(User user, CartItemRequestDto request) {
+        Cart cart = getOrCreateCart(user);
+        CartItem cartItem = getOrCreateCartItem(request, cart);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(cartMapper.toDto(updatedCart));
+        CartItem savedItem = saveCartItem(cart, cartItem);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(cartItemMapper.toDto(savedItem));
     }
 
     @Override

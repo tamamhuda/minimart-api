@@ -6,10 +6,9 @@ import com.tamamhuda.minimart.domain.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.UuidGenerator;
 
+import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.UUID;
 
 @Entity
 @Table
@@ -19,18 +18,20 @@ public class Payment extends BaseEntity {
 
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "order_id")
     @JsonIgnore
     private Order order;
 
+    @Column(name = "method")
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private PaymentMethod method;
 
     private Instant paidAt;
 
+    @Column(name = "total_amount" ,nullable = false)
+    private BigDecimal totalAmount;
+
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private PaymentStatus Status = PaymentStatus.PENDING;
 
 }
