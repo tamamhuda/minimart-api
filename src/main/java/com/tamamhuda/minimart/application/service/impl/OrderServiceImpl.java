@@ -1,14 +1,11 @@
 package com.tamamhuda.minimart.application.service.impl;
 
-import com.tamamhuda.minimart.application.dto.InvoiceDto;
 import com.tamamhuda.minimart.application.dto.OrderDto;
 import com.tamamhuda.minimart.application.dto.OrderRequestDto;
-import com.tamamhuda.minimart.application.dto.PaymentDto;
 import com.tamamhuda.minimart.application.mapper.OrderMapper;
+import com.tamamhuda.minimart.application.mapper.PaymentMapper;
 import com.tamamhuda.minimart.application.service.OrderService;
 import com.tamamhuda.minimart.domain.entity.*;
-import com.tamamhuda.minimart.domain.enums.InvoiceStatus;
-import com.tamamhuda.minimart.domain.enums.PaymentStatus;
 import com.tamamhuda.minimart.domain.repository.OrderRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -32,52 +28,22 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final CartServiceImpl cartService;
-    private final PaymentServiceImpl paymentService;
-    private final InvoiceServiceImpl invoiceService;
     private final UserServiceImpl userService;
+    private final PaymentMapper paymentMapper;
 
 
-    private Order createOrder(User user, List<OrderItem> orderItems, Payment payment, Invoice invoice, BigDecimal totalAmount) {
+    private Order createOrder(User user, List<OrderItem> orderItems, BigDecimal totalAmount) {
         Order order = new Order();
 
-        order.AttachInvoice(invoice);
-        order.AttachPayment(payment);
         order.setTotalPrice(totalAmount);
 
         for (OrderItem orderItem : orderItems) {
-            order.AddItem(orderItem);
+            order.addItem(orderItem);
         }
 
         user.addOrder(order);
 
         return orderRepository.save(order);
-    }
-
-    private Order findOrderById(UUID orderId) {
-        return orderRepository.findById(orderId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
-    }
-
-    private Payment createPayment(BigDecimal totalAmount) {
-        PaymentDto paymentDto = PaymentDto.builder()
-                .totalAmount(totalAmount)
-                .status(PaymentStatus.PENDING.name())
-                .build();
-
-        return paymentService.create(paymentDto);
-    }
-
-    private Invoice createInvoice(User user, BigDecimal totalAmount) {
-        InvoiceDto invoiceDto = InvoiceDto.builder()
-                .customerName(user.getFullName())
-                .customerEmail(user.getEmail())
-                .totalAmount(totalAmount)
-                .status(InvoiceStatus.UNPAID.name())
-                .issuedDate(Instant.now())
-                .build();
-
-        return invoiceService.create(invoiceDto);
-
     }
 
 
@@ -124,33 +90,31 @@ public class OrderServiceImpl implements OrderService {
 
            BigDecimal totalAmount = calculateTotalAmount(orderItems);
 
-           Payment payment = createPayment(totalAmount);
+           Order order = createOrder(managedUser, orderItems, totalAmount);
 
-           Invoice invoice = createInvoice(user, totalAmount);
-
-           Order order = createOrder(managedUser, orderItems, payment, invoice, totalAmount);
-
-           order.getOrderItems()
-                           .forEach(orderItem ->
-                               log.info(String.valueOf(orderItem.getId()))
-                           );
            cartService.removeCartItems(cartItems);
 
            return ResponseEntity.status(HttpStatus.CREATED).body(orderMapper.toDto(order));
 
     }
 
+    @Override
+    public Order findById(UUID orderId) {
+        return orderRepository.findById(orderId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+    }
+
     @Transactional
     public ResponseEntity<List<OrderDto>> getAllUserOrders(User user) {
             User existingUser = userService.getUserByUsername(user.getUsername());
             List<Order> orders = existingUser.getOrders();
-
             return ResponseEntity.status(HttpStatus.OK).body(orderMapper.toDto(orders));
     }
 
+
     @Override
     public ResponseEntity<OrderDto> getOrderById(UUID orderId) {
-        Order order = findOrderById(orderId);
+        Order order = findById(orderId);
         return ResponseEntity.status(HttpStatus.OK).body(orderMapper.toDto(order));
     }
 }

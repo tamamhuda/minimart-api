@@ -31,4 +31,6 @@ public class PaymentDto extends BaseDto{
 
     private String status;
 
+    private InvoiceDto invoice;
+
 }

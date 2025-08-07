@@ -15,16 +15,25 @@ import java.time.Instant;
 @Setter
 public class Invoice extends BaseEntity {
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "order_id")
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_id", nullable = false)
     @JsonIgnore
-    private Order order;
+    private Payment payment;
 
     @Column(name = "customer_name", nullable = false)
     private String customerName;
 
     @Column(name = "customer_email")
     private String customerEmail;
+
+    @Column(name = "external_id", unique = true, nullable = false)
+    private String externalId;
+
+    @Column(name = "invoice_url")
+    private String invoiceUrl;
+
+    @Column(name = "expiry_date")
+    private Instant expiryDate;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)

@@ -2,6 +2,7 @@ package com.tamamhuda.minimart.application.service;
 
 import com.tamamhuda.minimart.application.dto.OrderDto;
 import com.tamamhuda.minimart.application.dto.OrderRequestDto;
+import com.tamamhuda.minimart.domain.entity.Order;
 import com.tamamhuda.minimart.domain.entity.User;
 import org.springframework.http.ResponseEntity;
 
@@ -15,5 +16,7 @@ public interface OrderService {
     ResponseEntity<List<OrderDto>> getAllUserOrders(User user);
 
     ResponseEntity<OrderDto> getOrderById(UUID orderId);
+
+    Order findById(UUID orderId);
 
 }

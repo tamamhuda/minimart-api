@@ -11,11 +11,9 @@ public interface OrderMapper extends GenericDtoMapper<OrderDto, Order> {
 
     @Override
     @Mappings({
-            @Mapping(source = "user.id", target = "userId"),
             @Mapping(source = "orderItems", target = "orderItems"),
-            @Mapping(source = "payment.id", target = "paymentId"),
-            @Mapping(source = "invoice.id", target = "invoiceId"),
-
+            @Mapping(source = "payment", target = "payment"),
+            @Mapping(source = "user", target = "user")
     })
     OrderDto toDto(Order order);
 }
