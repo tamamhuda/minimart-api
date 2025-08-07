@@ -5,7 +5,7 @@ Authorization: Bearer {{token.access_token}}
 
 {
   "cart_items_ids": [
-      "e3798d05-1d98-418f-aff5-abd0b7352da2"
+      "29172b46-ca15-4ed5-8c92-a6b5e3f53432"
   ]
 }
 
@@ -15,5 +15,5 @@ Content-Type: application/json
 Authorization: Bearer {{token.access_token}}
 
 ### get order by id
-GET {{baseUrl}}/{{version}}/orders/b34ce2af-c6cb-4579-8d97-dbdd62a1236a
+GET {{baseUrl}}/{{version}}/orders/931641db-f342-4d10-b331-d04ec81bfdfa
 Authorization: Bearer {{token.access_token}}

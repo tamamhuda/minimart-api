@@ -28,16 +28,14 @@ public class Order extends BaseEntity {
     @Column(name = "total_price", nullable = false)
     private BigDecimal totalPrice;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Payment payment;
 
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Invoice invoice;
 
-    public void AddItem(OrderItem item) {
+    public void addItem(OrderItem item) {
         if (orderItems == null) {
             orderItems = new ArrayList<>();
         }
@@ -45,11 +43,8 @@ public class Order extends BaseEntity {
         item.setOrder(this);
     }
 
-    public void AttachPayment(Payment payment) {
+    public void attachPayment(Payment payment) {
         this.payment = payment;
-    }
-
-    public void AttachInvoice(Invoice invoice) {
-        this.invoice = invoice;
+        payment.setOrder(this);
     }
 }

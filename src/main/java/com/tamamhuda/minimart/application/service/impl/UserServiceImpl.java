@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
+
 
 @Service
 @AllArgsConstructor
@@ -69,5 +71,11 @@ public class UserServiceImpl implements UserService {
         }
 
         return user;
+    }
+
+    public User getUserById(UUID userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.")
+        );
     }
 }

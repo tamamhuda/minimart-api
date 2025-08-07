@@ -1,0 +1,7 @@
+### start payment
+POST {{baseUrl}}/{{version}}/orders/931641db-f342-4d10-b331-d04ec81bfdfa/payments
+Authorization: Bearer {{token.access_token}}
+
+### get payment details
+GET {{baseUrl}}/{{version}}/orders/3ce3e8fe-0335-4e04-ae9b-492acc7c185e/payments/9758d5d9-edd4-4ddb-a9bf-0c1a60904701
+Authorization: Bearer {{token.access_token}}

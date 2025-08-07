@@ -31,6 +31,13 @@
 	</properties>
 	<dependencies>
 
+		<!-- https://mvnrepository.com/artifact/com.xendit/xendit-java-lib -->
+		<dependency>
+			<groupId>com.xendit</groupId>
+			<artifactId>xendit-java-lib</artifactId>
+			<version>1.21.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>s3</artifactId>

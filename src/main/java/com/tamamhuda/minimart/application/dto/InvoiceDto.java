@@ -21,11 +21,21 @@ import java.time.Instant;
 @JsonPropertyOrder({"id", "customer_name", "customer_email", "total_amount", "status", "invoice_pdf", "issued_date"})
 public class InvoiceDto extends BaseDto {
 
+
+    @JsonProperty("external_id")
+    private String externalId;
+
+    @JsonProperty("invoice_url")
+    private String invoiceUrl;
+
     @JsonProperty("customer_name")
     private String customerName;
 
     @JsonProperty("customer_email")
     private String customerEmail;
+
+    @JsonProperty("expiry_date")
+    private String expiryDate;
 
     private String status;
 

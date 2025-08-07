@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
+
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
@@ -22,7 +24,7 @@ public class ProductDto extends BaseDto {
 
     private String description;
 
-    private Float price;
+    private BigDecimal price;
 
     @JsonProperty("stock_quantity")
     private Integer stockQuantity;

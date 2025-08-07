@@ -16,11 +16,15 @@ import java.time.Instant;
 @Setter
 public class Payment extends BaseEntity {
 
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "order_id")
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
     @JsonIgnore
     private Order order;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "invoice_id")
+    @JsonIgnore
+    private Invoice invoice;
 
     @Column(name = "method")
     @Enumerated(EnumType.STRING)
@@ -28,10 +32,19 @@ public class Payment extends BaseEntity {
 
     private Instant paidAt;
 
-    @Column(name = "total_amount" ,nullable = false)
+    @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus Status = PaymentStatus.PENDING;
+
+    public void attachInvoice(Invoice invoice) {
+        this.invoice = invoice;
+
+        if (invoice != null && invoice.getPayment() != this) {
+            invoice.setPayment(this);
+        }
+
+    }
 
 }

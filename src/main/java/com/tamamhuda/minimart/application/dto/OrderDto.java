@@ -11,7 +11,6 @@ import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
 @AllArgsConstructor
 @RequiredArgsConstructor
@@ -19,13 +18,12 @@ import java.util.UUID;
 @Setter
 @SuperBuilder
 @JsonInclude(JsonInclude.Include.ALWAYS)
-@JsonPropertyOrder({"id", "user_id", "order_items", "payment_id", "invoice_id", "total_price", "status", })
+@JsonPropertyOrder({"id", "user", "items", "payment", "total_price", "status", })
 public class OrderDto extends BaseDto {
 
-    @JsonProperty("user_id")
-    private UUID userId;
+    private UserSummaryDto user;
 
-    @JsonProperty("order_items")
+    @JsonProperty("items")
     private List<OrderItemDto> orderItems;
 
     private String status;
@@ -33,10 +31,6 @@ public class OrderDto extends BaseDto {
     @JsonProperty("total_price")
     private BigDecimal totalPrice;
 
-    @JsonProperty("payment_id")
-    private UUID paymentId;
-
-    @JsonProperty("invoice_id")
-    private UUID invoiceId;
+    private PaymentSummaryDto payment;
 
 }
