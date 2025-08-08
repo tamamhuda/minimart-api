@@ -5,7 +5,7 @@ Authorization: Bearer {{token.access_token}}
 
 {
   "cart_items_ids": [
-      "29172b46-ca15-4ed5-8c92-a6b5e3f53432"
+      "11b3a69c-e368-4849-b9bb-02b6ae604f89"
   ]
 }
 

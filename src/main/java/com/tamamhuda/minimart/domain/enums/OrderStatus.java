@@ -1,7 +1,9 @@
 package com.tamamhuda.minimart.domain.enums;
 
 public enum OrderStatus {
-    PENDING,
+    PENDING_PAYMENT,
+    AWAITING_PAYMENT,
+    EXPIRED,
     PAID,
-    SHIPPED,
+    CANCELLED,
 }

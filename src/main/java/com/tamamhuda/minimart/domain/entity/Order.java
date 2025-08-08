@@ -23,7 +23,7 @@ public class Order extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OrderStatus status = OrderStatus.PENDING;
+    private OrderStatus status = OrderStatus.PENDING_PAYMENT;
 
     @Column(name = "total_price", nullable = false)
     private BigDecimal totalPrice;

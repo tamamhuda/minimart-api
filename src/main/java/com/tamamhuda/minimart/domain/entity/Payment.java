@@ -26,9 +26,9 @@ public class Payment extends BaseEntity {
     @JsonIgnore
     private Invoice invoice;
 
-    @Column(name = "method")
+    @Column(name = "payment_method")
     @Enumerated(EnumType.STRING)
-    private PaymentMethod method;
+    private PaymentMethod paymentMethod;
 
     private Instant paidAt;
 
