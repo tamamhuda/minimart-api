@@ -37,7 +37,7 @@ public class Invoice extends BaseEntity {
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private InvoiceStatus status = InvoiceStatus.UNPAID;
+    private InvoiceStatus status = InvoiceStatus.PENDING;
 
     @Column(name = "invoice_pdf")
     private String invoicePdf;
@@ -47,5 +47,8 @@ public class Invoice extends BaseEntity {
 
     @Column(name = "issued_date")
     private Instant issuedDate;
+
+    @Column(name = "xendit_invoice_payload", columnDefinition = "TEXT")
+    private String xenditInvoicePayload;
 
 }

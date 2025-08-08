@@ -18,7 +18,7 @@ import java.time.Instant;
 @Setter
 @SuperBuilder
 @JsonInclude(JsonInclude.Include.ALWAYS)
-@JsonPropertyOrder({"id", "customer_name", "customer_email", "total_amount", "status", "invoice_pdf", "issued_date"})
+@JsonPropertyOrder({"id", "external_id", "customer_name", "customer_email", "total_amount", "status", "invoice_pdf", "issued_date", "invoice_url", "expiry_date"})
 public class InvoiceDto extends BaseDto {
 
 

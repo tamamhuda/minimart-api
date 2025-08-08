@@ -24,10 +24,12 @@ public class PaymentDto extends BaseDto{
     @JsonProperty("total_amount")
     private BigDecimal totalAmount;
 
-    private String method;
+    @JsonProperty("payment_method")
+    private String paymentMethod;
 
     @JsonProperty("paid_at")
     private Instant paidAt;
+
 
     private String status;
 

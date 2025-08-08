@@ -10,7 +10,7 @@ import java.time.Instant;
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"statusCode", "message", "error", "path", "timestamp"})
+@JsonPropertyOrder({"statusCode", "error", "message", "path", "timestamp"})
 public class ErrorResponseDto {
     private int statusCode;
     private String message;

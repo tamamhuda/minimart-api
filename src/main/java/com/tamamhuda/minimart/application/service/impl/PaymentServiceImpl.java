@@ -7,6 +7,7 @@ import com.tamamhuda.minimart.application.mapper.InvoiceItemsMapper;
 import com.tamamhuda.minimart.application.mapper.PaymentMapper;
 import com.tamamhuda.minimart.application.service.PaymentService;
 import com.tamamhuda.minimart.domain.entity.*;
+import com.tamamhuda.minimart.domain.enums.OrderStatus;
 import com.tamamhuda.minimart.domain.enums.PaymentStatus;
 import com.tamamhuda.minimart.domain.repository.PaymentRepository;
 import com.xendit.exception.XenditException;
@@ -41,7 +42,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final InvoiceServiceImpl invoiceService;
 
 
-    private Payment findById(UUID paymentId) {
+    public Payment findById(UUID paymentId) {
         return paymentRepository.findById(paymentId).orElseThrow(
                 ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Payment not found"));
     }
@@ -115,6 +116,7 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setOrder(order);
 
         order.attachPayment(payment);
+        order.setStatus(OrderStatus.PENDING_PAYMENT);
 
         return paymentRepository.save(payment);
     }
@@ -124,12 +126,16 @@ public class PaymentServiceImpl implements PaymentService {
     public ResponseEntity<PaymentDto> getPaymentDetails(UUID paymentId, UUID orderId) {
         Order order = orderServiceImpl.findById(orderId);
 
-        Payment payment = order.getPayment();
+        Payment payment = findById(paymentId);
 
-        if (payment == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Payment not found for the order");
+        if (!payment.getOrder().equals(order)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Payment with order " + orderId + " not found");
         }
+
 
         return ResponseEntity.status(HttpStatus.OK).body(paymentMapper.toDto(payment));
     }
+
+
+
 }

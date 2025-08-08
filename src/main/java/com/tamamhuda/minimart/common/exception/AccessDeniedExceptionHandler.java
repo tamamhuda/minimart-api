@@ -13,6 +13,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerMapping;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 
 @Component
@@ -29,10 +30,13 @@ public class AccessDeniedExceptionHandler implements AccessDeniedHandler {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json");
 
+        String message = Arrays.stream(requiredRoles).findAny().isEmpty() ? accessDeniedException.getLocalizedMessage()
+                : "Access Denied. Required roles: " + String.join(", ", requiredRoles) ;
+
         ErrorResponseDto errorResponse = ErrorResponseDto.builder()
                 .statusCode(response.getStatus())
-                .message("Access Denied. Required roles: " + String.join(", ", requiredRoles))
-                .error(accessDeniedException.getLocalizedMessage())
+                .message(message)
+                .error("Access Denied")
                 .path(request.getRequestURI())
                 .build();
 
