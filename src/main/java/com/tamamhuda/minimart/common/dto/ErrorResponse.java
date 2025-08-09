@@ -1,4 +1,4 @@
-package com.tamamhuda.minimart.application.dto;
+package com.tamamhuda.minimart.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -11,7 +11,7 @@ import java.time.Instant;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"statusCode", "error", "message", "path", "timestamp"})
-public class ErrorResponseDto {
+public class ErrorResponse {
     private int statusCode;
     private String message;
     private Object error; // Can be String or Map<String, String>
