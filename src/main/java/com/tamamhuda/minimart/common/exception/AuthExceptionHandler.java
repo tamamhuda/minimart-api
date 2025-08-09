@@ -1,7 +1,7 @@
 package com.tamamhuda.minimart.common.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tamamhuda.minimart.application.dto.ErrorResponseDto;
+import com.tamamhuda.minimart.common.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -31,7 +31,7 @@ public class AuthExceptionHandler implements AuthenticationEntryPoint {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
 
-        ErrorResponseDto errorResponse = ErrorResponseDto.builder()
+        ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode(response.getStatus())
                 .message(errorMessage)
                 .error("401 Unauthorized")

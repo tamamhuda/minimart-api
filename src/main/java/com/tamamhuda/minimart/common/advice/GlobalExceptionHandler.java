@@ -1,7 +1,8 @@
-package com.tamamhuda.minimart.common.exception;
+package com.tamamhuda.minimart.common.advice;
 
 
-import com.tamamhuda.minimart.application.dto.ErrorResponseDto;
+import com.tamamhuda.minimart.common.dto.ErrorResponse;
+import com.tamamhuda.minimart.common.exception.UnauthorizedException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -10,7 +11,6 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponseDto> handleValidation(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
                         LinkedHashMap::new
                 ));
 
-        ErrorResponseDto response = ErrorResponseDto
+        ErrorResponse response = ErrorResponse
                 .builder()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .message("Validation Error")
@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponseDto> handleConstraintViolation(ConstraintViolationException ex) {
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException ex) {
         Map<String, String> errors = ex.getConstraintViolations()
                 .stream()
                 .collect(Collectors.toMap(
@@ -67,7 +67,7 @@ public class GlobalExceptionHandler {
                         LinkedHashMap::new
                 ));
 
-        ErrorResponseDto response = ErrorResponseDto
+        ErrorResponse response = ErrorResponse
                 .builder()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .message("Validation Error")
@@ -92,7 +92,7 @@ public class GlobalExceptionHandler {
                         MessageSourceResolvable::getDefaultMessage, (existing, replacement) -> existing, LinkedHashMap::new)
                 );
 
-        ErrorResponseDto response = ErrorResponseDto.builder()
+        ErrorResponse response = ErrorResponse.builder()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .message("Validation Error")
                 .error(errors)// You must set this in your builder
@@ -103,7 +103,7 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ErrorResponseDto> handleResponseStatusException(ResponseStatusException ex) {
+    public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex) {
         HttpStatusCode statusCode = ex.getStatusCode();
 
         String message = ex.getReason() != null
@@ -117,7 +117,7 @@ public class GlobalExceptionHandler {
             error = "HTTP " + statusCode.value();
         }
 
-        ErrorResponseDto errorResponse = ErrorResponseDto.builder()
+        ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode(statusCode.value())
                 .message(message)
                 .error(error)
@@ -127,9 +127,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ErrorResponseDto> handleAllExceptions(Exception ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex, HttpServletRequest request) {
 
-        ErrorResponseDto errorResponse = ErrorResponseDto.builder()
+        ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode(HttpStatus.UNAUTHORIZED.value())
                 .message( ex.getMessage())
                 .error(ex.getClass().getSimpleName())
@@ -140,8 +140,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ErrorResponseDto> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex,  HttpServletRequest request) {
-        ErrorResponseDto errorResponse = ErrorResponseDto.builder()
+    public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .message( ex.getMessage())
                 .error(ex.getClass().getSimpleName())
