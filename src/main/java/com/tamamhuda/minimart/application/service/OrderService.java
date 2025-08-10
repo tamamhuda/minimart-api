@@ -4,18 +4,17 @@ import com.tamamhuda.minimart.application.dto.OrderDto;
 import com.tamamhuda.minimart.application.dto.OrderRequestDto;
 import com.tamamhuda.minimart.domain.entity.Order;
 import com.tamamhuda.minimart.domain.entity.User;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface OrderService {
 
-    ResponseEntity<OrderDto> checkout(User user, OrderRequestDto request);
+    OrderDto checkout(User user, OrderRequestDto request);
 
-    ResponseEntity<List<OrderDto>> getAllUserOrders(User user);
+    List<OrderDto> getAllUserOrders(User user);
 
-    ResponseEntity<OrderDto> getOrderById(UUID orderId);
+    OrderDto getOrderById(UUID orderId);
 
     Order findById(UUID orderId);
 

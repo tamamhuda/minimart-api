@@ -34,7 +34,7 @@ public class AccessDeniedExceptionHandler implements AccessDeniedHandler {
                 : "Access Denied. Required roles: " + String.join(", ", requiredRoles) ;
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(response.getStatus())
+                .status(response.getStatus())
                 .message(message)
                 .error("Access Denied")
                 .path(request.getRequestURI())

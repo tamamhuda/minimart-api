@@ -11,7 +11,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -81,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public ResponseEntity<OrderDto> checkout(User user, OrderRequestDto request) {
+    public OrderDto checkout(User user, OrderRequestDto request) {
            User managedUser = userService.getUserByUsername(user.getUsername());
            List<UUID> cartItemsIds = request.getCartItemIds();
            List<CartItem> cartItems = cartService.getCartItemsByIds(cartItemsIds);
@@ -94,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
 
            cartService.removeCartItems(cartItems);
 
-           return ResponseEntity.status(HttpStatus.CREATED).body(orderMapper.toDto(order));
+           return orderMapper.toDto(order);
 
     }
 
@@ -105,16 +104,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Transactional
-    public ResponseEntity<List<OrderDto>> getAllUserOrders(User user) {
+    public List<OrderDto> getAllUserOrders(User user) {
             User existingUser = userService.getUserByUsername(user.getUsername());
             List<Order> orders = existingUser.getOrders();
-            return ResponseEntity.status(HttpStatus.OK).body(orderMapper.toDto(orders));
+            return orderMapper.toDto(orders);
     }
 
 
     @Override
-    public ResponseEntity<OrderDto> getOrderById(UUID orderId) {
+    public OrderDto getOrderById(UUID orderId) {
         Order order = findById(orderId);
-        return ResponseEntity.status(HttpStatus.OK).body(orderMapper.toDto(order));
+        return orderMapper.toDto(order);
     }
 }

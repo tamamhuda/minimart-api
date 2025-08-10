@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -42,7 +44,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse response = ErrorResponse
                 .builder()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .status(HttpStatus.BAD_REQUEST.value())
                 .message("Validation Error")
                 .error(errors)
                 .build();
@@ -69,7 +71,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse response = ErrorResponse
                 .builder()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .status(HttpStatus.BAD_REQUEST.value())
                 .message("Validation Error")
                 .error(errors)
                 .build();
@@ -93,7 +95,7 @@ public class GlobalExceptionHandler {
                 );
 
         ErrorResponse response = ErrorResponse.builder()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .status(HttpStatus.BAD_REQUEST.value())
                 .message("Validation Error")
                 .error(errors)// You must set this in your builder
                 .build();
@@ -118,7 +120,7 @@ public class GlobalExceptionHandler {
         }
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(statusCode.value())
+                .status(statusCode.value())
                 .message(message)
                 .error(error)
                 .build();
@@ -130,7 +132,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex, HttpServletRequest request) {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .status(HttpStatus.UNAUTHORIZED.value())
                 .message( ex.getMessage())
                 .error(ex.getClass().getSimpleName())
                 .path(request.getRequestURI())
@@ -142,7 +144,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .status(HttpStatus.BAD_REQUEST.value())
                 .message( ex.getMessage())
                 .error(ex.getClass().getSimpleName())
                 .path(request.getRequestURI())

@@ -32,7 +32,7 @@ public class AuthExceptionHandler implements AuthenticationEntryPoint {
         response.setContentType("application/json");
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(response.getStatus())
+                .status(response.getStatus())
                 .message(errorMessage)
                 .error("401 Unauthorized")
                 .path(request.getRequestURI())

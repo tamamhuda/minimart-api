@@ -1,18 +1,20 @@
 package com.tamamhuda.minimart.common.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.time.Instant;
 
-@Data
+@AllArgsConstructor
+@RequiredArgsConstructor
+@Setter
+@Getter
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"statusCode", "error", "message", "path", "timestamp"})
+@JsonPropertyOrder({"status", "error", "message", "path", "timestamp"})
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ErrorResponse {
-    private int statusCode;
+    private int status;
     private String message;
     private Object error; // Can be String or Map<String, String>
     private String path;

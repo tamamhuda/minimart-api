@@ -2,11 +2,10 @@ package com.tamamhuda.minimart.application.service;
 
 import com.tamamhuda.minimart.application.dto.ProductDto;
 import com.tamamhuda.minimart.application.dto.ProductRequestDto;
+import com.tamamhuda.minimart.common.dto.PageResponse;
 import com.tamamhuda.minimart.domain.entity.Product;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -15,23 +14,21 @@ import java.util.UUID;
 
 public interface ProductService {
 
-    public ResponseEntity<ProductDto> create(ProductRequestDto request);
+    ProductDto create(ProductRequestDto request);
 
-    public ResponseEntity<ProductDto> update(ProductRequestDto request, UUID productId);
+    ProductDto update(ProductRequestDto request, UUID productId);
 
-    public ResponseEntity<?> deleteProductById(UUID productId);
+    void deleteProductById(UUID productId);
 
-    public Product findById(UUID productId);
+    Product findById(UUID productId);
 
-    public ResponseEntity<ProductDto> getProductById(UUID productId);
+    ProductDto getProductById(UUID productId);
 
-    public ResponseEntity<List<ProductDto>> getAllProducts(String categoryIdOrName);
+    List<ProductDto> getByCategory(String categoryIdOrName);
 
-    public ResponseEntity<List<ProductDto>> getByCategory(String categoryIdOrName);
+    ProductDto uploadProductImage(MultipartFile file, UUID productId);
 
-    public ResponseEntity<ProductDto> uploadProductImage(MultipartFile file, UUID productId);
+    void proxyProductImage(HttpServletResponse response, UUID productId, String imageUrl);
 
-    public void proxyProductImage(HttpServletResponse response, UUID productId, String imageUrl);
-
-    public ResponseEntity<Page<Product>> getProductByFilters(String categoryIdOrName, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
+    PageResponse<ProductDto> getProductsByFilters(String categoryIdOrName, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
 }

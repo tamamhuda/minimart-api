@@ -13,15 +13,14 @@ Authorization: Bearer {{token.access_token}}
 }
 
 ### get product by id
-GET {{baseUrl}}/{{version}}/products/2ce2eea4-738f-47be-9ac2-7b6e7d596065
+GET {{baseUrl}}/{{version}}/products/e860c8d2-9c41-4809-98bd-0e7ea3ff502a
 
 ### update product
-PUT {{baseUrl}}/{{version}}/products/0e407594-3707-47a5-b849-b51d95347e59
+PUT {{baseUrl}}/{{version}}/products/e860c8d2-9c41-4809-98bd-0e7ea3ff502a
 Content-Type: application/json
 
 {
-  "price": 25000,
-  "image_url": "https://dummy-image-url.png"
+  "price": 75000
 }
 
 ### delete product

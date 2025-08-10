@@ -5,15 +5,19 @@ import com.tamamhuda.minimart.application.dto.ProductRequestDto;
 import com.tamamhuda.minimart.application.mapper.ProductMapper;
 import com.tamamhuda.minimart.application.mapper.ProductRequestMapper;
 import com.tamamhuda.minimart.application.service.ProductService;
+import com.tamamhuda.minimart.common.dto.PageResponse;
 import com.tamamhuda.minimart.domain.entity.Category;
 import com.tamamhuda.minimart.domain.entity.Product;
 import com.tamamhuda.minimart.domain.repository.ProductRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,7 +37,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRequestMapper productRequestMapper;
 
     @Override
-    public ResponseEntity<ProductDto> create(ProductRequestDto request) {
+    public ProductDto create(ProductRequestDto request) {
         Product requestProduct = productRequestMapper.toEntity(request);
 
         Category category = categoryService.getByIdOrName(request.getCategoryIdOrName());
@@ -41,11 +45,13 @@ public class ProductServiceImpl implements ProductService {
         requestProduct.setCategory(category);
         Product product = productRepository.save(requestProduct);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(productMapper.toDto(product));
+        return productMapper.toDto(product);
     }
 
     @Override
-    public ResponseEntity<ProductDto> update(ProductRequestDto request, UUID productId) {
+    @CachePut(cacheNames = "product", key = "#productId")
+    @CacheEvict(cacheNames = "productsFilter", allEntries = true)
+    public ProductDto update(ProductRequestDto request, UUID productId) {
         Product product = findById(productId);
 
         productRequestMapper.updateFromRequestDto(request, product);
@@ -59,13 +65,18 @@ public class ProductServiceImpl implements ProductService {
 
         Product updatedProduct = productRepository.save(product);
 
-        return ResponseEntity.status(HttpStatus.OK).body(productMapper.toDto(updatedProduct));
+        return productMapper.toDto(updatedProduct);
     }
     @Override
-    public ResponseEntity<?> deleteProductById(UUID productId) {
+    @Caching(
+            evict = {
+                    @CacheEvict(cacheNames = "product", key = "#productId"),
+                    @CacheEvict(cacheNames = "productsFilters", allEntries = true )
+            }
+    )
+    public void deleteProductById(UUID productId) {
         Product product = findById(productId);
         productRepository.delete(product);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     public Product findById(UUID id) {
@@ -74,36 +85,27 @@ public class ProductServiceImpl implements ProductService {
         );
     }
 
-    public ResponseEntity<ProductDto> getProductById(UUID id) {
-        Product product = findById(id);
+    @Override
+    @Cacheable(cacheNames = "product", key = "#productId")
+    public ProductDto getProductById(UUID productId) {
+        Product product = findById(productId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(productMapper.toDto(product));
+        return productMapper.toDto(product);
     }
 
     @Override
-    public ResponseEntity<List<ProductDto>> getAllProducts(String categoryIdOrName) {
-        List<Product> products;
-
-        if (categoryIdOrName != null) {
-            return getByCategory(categoryIdOrName);
-        }
-
-        products = productRepository.findAll();
-
-        return ResponseEntity.status(HttpStatus.OK).body((productMapper.toDto(products)));
-    }
-
-    @Override
-    public ResponseEntity<List<ProductDto>> getByCategory(String categoryIdOrName) {
+    public List<ProductDto> getByCategory(String categoryIdOrName) {
         Category category = categoryService.getByIdOrName(categoryIdOrName);
 
         List<Product> products = productRepository.findByCategoryId(category.getId());
 
-        return ResponseEntity.status(HttpStatus.OK).body((productMapper.toDto(products)));
+        return productMapper.toDto(products);
     }
 
     @Override
-    public ResponseEntity<ProductDto> uploadProductImage(MultipartFile file, UUID productId) {
+    @CachePut(cacheNames = "product", key = "#productId")
+    @CacheEvict(cacheNames = "productsFilters", allEntries = true )
+    public ProductDto uploadProductImage(MultipartFile file, UUID productId) {
         Product product = findById(productId);
 
         String imageUrl = s3Service.uploadImage(file, "products");
@@ -111,7 +113,7 @@ public class ProductServiceImpl implements ProductService {
         product.setUpdatedAt(Instant.now());
         productRepository.save(product);
 
-        return ResponseEntity.status(HttpStatus.OK).body(productMapper.toDto(product));
+        return productMapper.toDto(product);
     }
 
     private Product validateProductImageUrl(UUID productId, String imageUrl) {
@@ -125,14 +127,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @CachePut(cacheNames = "product", key = "#productId")
+    @CacheEvict(cacheNames = "productsFilters", allEntries = true )
     public void proxyProductImage(HttpServletResponse response, UUID productId, String imageUrl) {
         Product product = validateProductImageUrl(productId, imageUrl);
-
         s3Service.proxyImage(response, "products", product.getImageUrl());
     }
 
     @Override
-    public ResponseEntity<Page<Product>> getProductByFilters(String categoryIdOrName, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
+    @Cacheable(
+            cacheNames = "productsFilters",
+            key = "new org.springframework.cache.interceptor.SimpleKey(#categoryIdOrName, #minPrice, #maxPrice, #pageable.pageNumber, #pageable.pageSize, #pageable.sort.toString())"
+    )
+    public PageResponse<ProductDto> getProductsByFilters(String categoryIdOrName, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
         String categoryId = null;
 
         if (categoryIdOrName != null) {
@@ -140,8 +147,17 @@ public class ProductServiceImpl implements ProductService {
             categoryId = category.getId().toString();
         }
 
-        Page<Product> products = productRepository.findByAllFilters(categoryId, minPrice, maxPrice, pageable);
+        Page<Product> productPage = productRepository.findByAllFilters(categoryId, minPrice, maxPrice, pageable);
 
-        return ResponseEntity.status(HttpStatus.OK).body(products);
+        Page<ProductDto> page = productPage.map(productMapper::toDto);
+
+        return PageResponse.<ProductDto>builder()
+                .content(page.getContent())
+                .pageNumber(page.getNumber())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .pageSize(page.getSize())
+                .last(page.isLast())
+                .build();
     }
 }

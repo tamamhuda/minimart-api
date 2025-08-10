@@ -10,6 +10,7 @@ import com.tamamhuda.minimart.common.validation.group.Create;
 import com.tamamhuda.minimart.common.validation.group.Update;
 import com.tamamhuda.minimart.domain.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -28,34 +29,40 @@ public class CartController {
     @PreAuthorize("hasRole('CUSTOMER')")
     @RequiredRoles({"CUSTOMER"})
     public ResponseEntity<CartItemDto> addItemToCart(@CurrentUser User user, @Validated(Create.class) @RequestBody CartItemRequestDto request) {
-        return cartService.addCartItem(user, request);
+        CartItemDto response = cartService.addCartItem(user, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/items/{item_id}")
     @PreAuthorize("hasRole('CUSTOMER')")
     @RequiredRoles({"CUSTOMER"})
     public ResponseEntity<CartItemDto> getCartItem(@PathVariable("item_id") UUID item_id) {
-        return cartService.getCartItem(item_id);
+        CartItemDto response = cartService.getCartItem(item_id);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/items/{item_id}")
     @PreAuthorize("hasRole('CUSTOMER')")
     @RequiredRoles({"CUSTOMER"})
     public ResponseEntity<?> removeCartItem(@CurrentUser User user, @PathVariable("item_id") UUID item_id) {
-        return cartService.removeCartItem(user, item_id);
+        cartService.removeCartItem(user, item_id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PutMapping("/items/{item_id}")
     @PreAuthorize("hasRole('CUSTOMER')")
     @RequiredRoles({"CUSTOMER"})
     public ResponseEntity<CartItemDto> updateCartItem(@Validated(Update.class) @RequestBody CartItemRequestDto request, @PathVariable("item_id") UUID item_id) {
-        return cartService.updateCartItem(item_id, request);
+        CartItemDto response = cartService.updateCartItem(item_id, request);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping()
     @PreAuthorize("hasRole('CUSTOMER')")
     @RequiredRoles({"CUSTOMER"})
     public ResponseEntity<CartDto> getCartItem(@CurrentUser User user) {
-        return cartService.getCart(user);
+        CartDto response = cartService.getCart(user);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+
     }
 }

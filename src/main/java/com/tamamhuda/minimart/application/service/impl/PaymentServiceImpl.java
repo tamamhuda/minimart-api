@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -87,7 +86,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public ResponseEntity<PaymentDto> startPaymentForOrder(User user, UUID orderId) {
+    public PaymentDto startPaymentForOrder(User user, UUID orderId) {
         Order order = orderServiceImpl.findById(orderId);
 
         if (order.getPayment() != null ) {
@@ -102,7 +101,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         Payment updatedPayment = paymentRepository.save(payment);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(paymentMapper.toDto(updatedPayment));
+        return paymentMapper.toDto(updatedPayment);
     }
 
     private Payment createPayment(Order order) {
@@ -123,7 +122,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public ResponseEntity<PaymentDto> getPaymentDetails(UUID paymentId, UUID orderId) {
+    public PaymentDto getPaymentDetails(UUID paymentId, UUID orderId) {
         Order order = orderServiceImpl.findById(orderId);
 
         Payment payment = findById(paymentId);
@@ -132,8 +131,7 @@ public class PaymentServiceImpl implements PaymentService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Payment with order " + orderId + " not found");
         }
 
-
-        return ResponseEntity.status(HttpStatus.OK).body(paymentMapper.toDto(payment));
+        return paymentMapper.toDto(payment);
     }
 
 
