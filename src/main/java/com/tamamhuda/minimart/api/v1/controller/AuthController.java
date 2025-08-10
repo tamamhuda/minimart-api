@@ -7,6 +7,7 @@ import com.tamamhuda.minimart.common.exception.UnauthorizedException;
 import com.tamamhuda.minimart.domain.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,27 +22,31 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponseDto> login(@Valid @RequestBody LoginRequestDto request) throws UnauthorizedException {
-        return authService.login(request);
+        TokenResponseDto response = authService.login(request);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping("/register")
     public ResponseEntity<TokenResponseDto> register(@Valid @RequestBody RegisterRequestDto request) {
-        return authService.register(request);
+        TokenResponseDto response = authService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/me")
     public ResponseEntity<UserDto> me(@CurrentUser User user) {
-        return authService.me(user);
+        UserDto response = authService.me(user);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<RefreshResponseDto> refresh(@Valid @RequestBody TokenRequest request) {
-        return authService.refresh(request);
-
+        RefreshResponseDto response = authService.refresh(request);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<?>  logout(@Valid @RequestBody TokenRequest request) {
-        return authService.logout(request);
+        authService.logout(request);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

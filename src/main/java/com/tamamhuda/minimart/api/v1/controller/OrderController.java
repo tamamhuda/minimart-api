@@ -8,6 +8,7 @@ import com.tamamhuda.minimart.common.annotation.RequiredRoles;
 import com.tamamhuda.minimart.domain.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -28,21 +29,24 @@ public class OrderController {
     @PreAuthorize("hasRole('CUSTOMER')")
     @RequiredRoles({"CUSTOMER"})
     public ResponseEntity<OrderDto> checkout(@CurrentUser User user, @Valid @RequestBody OrderRequestDto request) {
-        return orderService.checkout(user, request);
+        OrderDto response = orderService.checkout(user, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
     @PreAuthorize("hasRole('CUSTOMER')")
     @RequiredRoles({"CUSTOMER"})
     public ResponseEntity<List<OrderDto>> getAllUserOrders(@CurrentUser User user) {
-        return orderService.getAllUserOrders(user);
+        List<OrderDto> response = orderService.getAllUserOrders(user);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/{order_id}")
     @PreAuthorize("hasRole('CUSTOMER')")
     @RequiredRoles({"CUSTOMER"})
     public ResponseEntity<OrderDto> getOrderById(@PathVariable("order_id") UUID orderId) {
-        return orderService.getOrderById(orderId);
+        OrderDto response = orderService.getOrderById(orderId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 

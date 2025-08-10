@@ -7,6 +7,7 @@ import com.tamamhuda.minimart.common.annotation.RequiredRoles;
 import com.tamamhuda.minimart.common.validation.group.Create;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -26,23 +27,27 @@ public class CategoryController {
     @PreAuthorize("hasRole('ADMIN')")
     @RequiredRoles({"ADMIN"})
     public ResponseEntity<CategoryDto> create(@Validated(Create.class) @RequestBody CategoryRequestDto request) {
-        return categoryService.create(request);
+        CategoryDto response = categoryService.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{category_id}")
     @RequiredRoles({"ADMIN"})
     public ResponseEntity<CategoryDto> update(@Valid @RequestBody CategoryRequestDto request, @PathVariable("category_id") UUID categoryId) {
-        return categoryService.update(request, categoryId);
+        CategoryDto response = categoryService.update(request, categoryId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/{category_id}")
     @RequiredRoles({"ADMIN"})
     public ResponseEntity<?> delete(@PathVariable("category_id") UUID categoryId) {
-        return categoryService.delete(categoryId);
+        categoryService.delete(categoryId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping()
     public ResponseEntity<List<CategoryDto>> getAllCategories() {
-        return categoryService.getAllCategories();
+        List<CategoryDto> response = categoryService.getAllCategories();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

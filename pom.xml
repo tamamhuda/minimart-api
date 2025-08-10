@@ -31,12 +31,17 @@
 	</properties>
 	<dependencies>
 
-		<!-- https://mvnrepository.com/artifact/com.xendit/xendit-java-lib -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>com.xendit</groupId>
 			<artifactId>xendit-java-lib</artifactId>
 			<version>1.21.0</version>
 		</dependency>
+
 
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>
@@ -48,12 +53,13 @@
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
-			<version>1.5.5.Final</version>
+			<version>1.6.3</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct-processor</artifactId>
-			<version>1.5.5.Final</version>
+			<version>1.6.3</version>
 			<scope>provided</scope>
 		</dependency>
 

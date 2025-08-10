@@ -8,8 +8,9 @@ import com.tamamhuda.minimart.application.service.CategoryService;
 import com.tamamhuda.minimart.domain.entity.Category;
 import com.tamamhuda.minimart.domain.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -50,7 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public ResponseEntity<CategoryDto> create(CategoryRequestDto request) {
+    public CategoryDto create(CategoryRequestDto request) {
         boolean isNameExist = categoryRepository.findByName(request.getName()).isPresent();
 
         if (isNameExist) {
@@ -60,30 +61,32 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRequestMapper.toEntity(request);
         Category savedCategory = categoryRepository.save(category);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoryMapper.toDto(savedCategory));
+        return categoryMapper.toDto(savedCategory);
     }
 
     @Override
-    public ResponseEntity<CategoryDto> update(CategoryRequestDto request, UUID categoryId) {
+    @CacheEvict(cacheNames = "categories", key = "'all-categories'")
+    public CategoryDto update(CategoryRequestDto request, UUID categoryId) {
         Category category = getById(categoryId);
 
         categoryRequestMapper.updateFromRequestDto(request, category);
         category.setUpdatedAt(Instant.now());
         Category updatedCategory = categoryRepository.save(category);
 
-        return ResponseEntity.status(HttpStatus.OK).body(categoryMapper.toDto(updatedCategory));
+        return categoryMapper.toDto(updatedCategory);
     }
 
     @Override
-    public ResponseEntity<?> delete(UUID categoryId) {
+    @CacheEvict(cacheNames = "categories", key = "'all-categories'")
+    public void delete(UUID categoryId) {
         Category category = getById(categoryId);
         categoryRepository.delete(category);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Override
-    public ResponseEntity<List<CategoryDto>> getAllCategories() {
+    @Cacheable(cacheNames = "categories", key = "'all-categories'")
+    public List<CategoryDto> getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(categoryMapper.toDto(categories));
+        return categoryMapper.toDto(categories);
     }
 }

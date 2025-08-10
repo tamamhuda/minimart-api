@@ -16,7 +16,6 @@ import com.tamamhuda.minimart.domain.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -39,9 +38,9 @@ public class CartServiceImpl implements CartService {
     private final ProductServiceImpl productService;
 
     @Override
-    public ResponseEntity<CartItemDto> getCartItem(UUID cartItemId) {
+    public CartItemDto getCartItem(UUID cartItemId) {
         CartItem cartItem = getCartItemById(cartItemId);
-        return ResponseEntity.status(HttpStatus.OK).body(cartItemMapper.toDto(cartItem));
+        return cartItemMapper.toDto(cartItem);
     }
 
     @Override
@@ -121,17 +120,17 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public ResponseEntity<CartItemDto> addCartItem(User user, CartItemRequestDto request) {
+    public CartItemDto addCartItem(User user, CartItemRequestDto request) {
         Cart cart = getOrCreateCart(user);
         CartItem cartItem = getOrCreateCartItem(request, cart);
 
         CartItem savedItem = saveCartItem(cart, cartItem);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(cartItemMapper.toDto(savedItem));
+        return cartItemMapper.toDto(savedItem);
     }
 
     @Override
-    public ResponseEntity<CartDto> removeCartItem(User user, UUID cartItemId) {
+    public void removeCartItem(User user, UUID cartItemId) {
         Cart userCart = getOrCreateCart(user);
         CartItem cartItem = getCartItemById(cartItemId);
 
@@ -140,19 +139,17 @@ public class CartServiceImpl implements CartService {
         cartRepository.save(userCart);
 
         cartItemRepository.delete(cartItem);
-
-        return ResponseEntity.noContent().build();
     }
 
     @Override
-    public ResponseEntity<CartItemDto> updateCartItem(UUID cartItemId, CartItemRequestDto request) {
+    public CartItemDto updateCartItem(UUID cartItemId, CartItemRequestDto request) {
         CartItem cartItem = getOrUpdateCartItem(request, cartItemId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(cartItemMapper.toDto(cartItem));
+        return cartItemMapper.toDto(cartItem);
     }
 
     @Override
-    public ResponseEntity<CartDto> getCart(User user) {
-        return ResponseEntity.status(HttpStatus.OK).body(cartMapper.toDto(getOrCreateCart(user)));
+    public CartDto getCart(User user) {
+        return cartMapper.toDto(getOrCreateCart(user));
     }
 }

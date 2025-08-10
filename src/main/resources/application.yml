@@ -52,3 +52,14 @@ spring:
       failure-url: http://localhost:8080/api/v1/webhook/payment/failure
   jackson:
     property-naming-strategy: SNAKE_CASE
+
+  cache:
+    type: redis
+    redis:
+      use-key-prefix: true
+      key-prefix: ${REDIS_KEY_PREFIX}
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      database: ${REDIS_DB}
+      port: ${REDIS_PORT}
