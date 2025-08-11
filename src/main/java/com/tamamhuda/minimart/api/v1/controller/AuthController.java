@@ -7,11 +7,15 @@ import com.tamamhuda.minimart.common.exception.UnauthorizedException;
 import com.tamamhuda.minimart.domain.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 @Validated
@@ -49,4 +53,17 @@ public class AuthController {
         authService.logout(request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    @GetMapping("/verify")
+    public ModelAndView verify(@RequestParam("token") String token, Model model) {
+        VerifyDto verified = authService.verify(token);
+
+        model.addAttribute("message", verified.getMessage());
+        model.addAttribute("status", verified.getStatus().name());
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("otp-verification");
+        return modelAndView;
+    }
+
 }

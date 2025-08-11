@@ -15,4 +15,6 @@ public interface AuthService {
     RefreshResponseDto refresh(TokenRequest request);
 
     void logout(TokenRequest request);
+
+    VerifyDto verify(String token);
 }
