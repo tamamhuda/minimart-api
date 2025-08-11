@@ -60,7 +60,7 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.toMap(
                         violation -> {
                             String fullPath = violation.getPropertyPath().toString();
-                            // Get only the last node in the path
+
                             String[] pathParts = fullPath.split("\\.");
                             return pathParts[pathParts.length - 1];
                         },
@@ -105,7 +105,7 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex) {
+    public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex, HttpServletRequest request) {
         HttpStatusCode statusCode = ex.getStatusCode();
 
         String message = ex.getReason() != null
@@ -123,6 +123,7 @@ public class GlobalExceptionHandler {
                 .status(statusCode.value())
                 .message(message)
                 .error(error)
+                .path(request.getRequestURI())
                 .build();
 
         return new ResponseEntity<>(errorResponse, statusCode);
@@ -145,7 +146,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .status(HttpStatus.BAD_REQUEST.value())
-                .message( ex.getMessage())
+                .message(ex.getMessage())
                 .error(ex.getClass().getSimpleName())
                 .path(request.getRequestURI())
                 .build();

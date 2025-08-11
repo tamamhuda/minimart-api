@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
 import java.util.UUID;
 
 
@@ -35,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    public UserDetails getByUsernameOrEmail(String username) throws UnauthorizedException {
+    public User getByUsernameOrEmail(String username) throws UnauthorizedException {
         try {
 
             return username.contains("@")
@@ -77,5 +78,13 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.")
         );
+    }
+
+    public void verifyUser(String username) {
+        User user = getUserByUsername(username);
+        user.setVerified(true);
+        user.setEnabled(true);
+        user.setUpdatedAt(Instant.now());
+        userRepository.save(user);
     }
 }

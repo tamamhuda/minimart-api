@@ -22,6 +22,9 @@ public class JwtConfig {
     @Value("${spring.security.jwt.refresh.secret-key}")
     private String refreshSecret;
 
+    @Value("${spring.totp.global-secret}")
+    private String otpSecretKey;
+
     @Bean
     @Qualifier("accessTokenEncoder")
     public JwtEncoder accessTokenEncoder() {
@@ -33,6 +36,12 @@ public class JwtConfig {
     @Qualifier("refreshTokenEncoder")
     public JwtEncoder refreshTokenEncoder() {
         return new NimbusJwtEncoder(new ImmutableSecret<>(refreshSecret.getBytes()));
+    }
+
+    @Bean
+    @Qualifier("otpTokenEncoder")
+    public JwtEncoder otpTokenEncoder() {
+        return new NimbusJwtEncoder(new ImmutableSecret<>(otpSecretKey.getBytes()));
     }
 
     @Bean
@@ -49,6 +58,17 @@ public class JwtConfig {
     @Qualifier("refreshTokenDecoder")
     public JwtDecoder refreshTokenDecoder() {
         byte[] bytes = refreshSecret.getBytes();
+        SecretKeySpec originalKey = new SecretKeySpec(bytes, 0, bytes.length,"HmacSHA256");
+        return NimbusJwtDecoder.withSecretKey(originalKey)
+                .macAlgorithm(MacAlgorithm.HS256)
+                .build();
+    }
+
+
+    @Bean
+    @Qualifier("otpTokenDecoder")
+    public JwtDecoder otpTokenDecoder() {
+        byte[] bytes = otpSecretKey.getBytes();
         SecretKeySpec originalKey = new SecretKeySpec(bytes, 0, bytes.length,"HmacSHA256");
         return NimbusJwtDecoder.withSecretKey(originalKey)
                 .macAlgorithm(MacAlgorithm.HS256)

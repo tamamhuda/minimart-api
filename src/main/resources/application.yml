@@ -58,8 +58,23 @@ spring:
     redis:
       use-key-prefix: true
       key-prefix: ${REDIS_KEY_PREFIX}
+
+
   data:
     redis:
       host: ${REDIS_HOST}
       database: ${REDIS_DB}
       port: ${REDIS_PORT}
+      repositories:
+        enabled: false
+
+  mailtrap:
+    token: ${MAILTRAP_TOKEN}
+    sender-email: ${MAILTRAP_SENDER_EMAIL}
+    template:
+      verification_email_id: ${MAILTRAP_TEMPLATE_VERIFICATION_EMAIL_ID}
+      verification_url: ${MAILTRAP_TEMPLATE_VERIFICATION_URL}
+
+  totp:
+    global-secret: ${TOTP_GLOBAL_SECRET}
+    expiration-in-minutes: ${TOTP_EXPIRY_IN_MINUTES}

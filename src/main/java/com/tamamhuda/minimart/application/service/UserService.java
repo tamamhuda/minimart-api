@@ -11,9 +11,11 @@ public interface UserService {
 
     public User getUserByEmail(String email) throws UnauthorizedException;
 
-    public UserDetails getByUsernameOrEmail(String username) throws ResponseStatusException;
+    public User getByUsernameOrEmail(String username) throws ResponseStatusException;
 
     public User createUser(User user);
 
     public UserDetails validateCredentials(String username, String password) throws UnauthorizedException;
+
+    void verifyUser(String username);
 }
