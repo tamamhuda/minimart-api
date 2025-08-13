@@ -13,7 +13,7 @@ Authorization: Bearer {{token.access_token}}
 }
 
 ### get product by id
-GET {{baseUrl}}/{{version}}/products/e860c8d2-9c41-4809-98bd-0e7ea3ff502a
+GET {{baseUrl}}/{{version}}/products/cef11db0-2415-4fe2-a8da-e85b395fd310
 
 ### update product
 PUT {{baseUrl}}/{{version}}/products/e860c8d2-9c41-4809-98bd-0e7ea3ff502a
