@@ -128,7 +128,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @CachePut(cacheNames = "product", key = "#productId")
-    @CacheEvict(cacheNames = "productsFilters", allEntries = true )
     public void proxyProductImage(HttpServletResponse response, UUID productId, String imageUrl) {
         Product product = validateProductImageUrl(productId, imageUrl);
         s3Service.proxyImage(response, "products", product.getImageUrl());

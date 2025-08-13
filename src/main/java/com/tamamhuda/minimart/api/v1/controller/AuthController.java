@@ -3,13 +3,16 @@ package com.tamamhuda.minimart.api.v1.controller;
 import com.tamamhuda.minimart.application.dto.*;
 import com.tamamhuda.minimart.application.service.impl.AuthServiceImpl;
 import com.tamamhuda.minimart.common.annotation.CurrentUser;
+import com.tamamhuda.minimart.common.annotation.RequiredRoles;
 import com.tamamhuda.minimart.common.exception.UnauthorizedException;
 import com.tamamhuda.minimart.domain.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.sql.Insert;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -31,15 +34,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<TokenResponseDto> register(@Valid @RequestBody RegisterRequestDto request) {
+    public ResponseEntity<TokenResponseDto> register(@Validated(Insert.class) @RequestBody UserRequestDto request) {
         TokenResponseDto response = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @GetMapping("/me")
-    public ResponseEntity<UserDto> me(@CurrentUser User user) {
-        UserDto response = authService.me(user);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping("/refresh")
@@ -52,6 +49,14 @@ public class AuthController {
     public ResponseEntity<?>  logout(@Valid @RequestBody TokenRequest request) {
         authService.logout(request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("/resend-verification")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @RequiredRoles({"CUSTOMER"})
+    public ResponseEntity<String> resendVerification(@CurrentUser User user) {
+        String response = authService.resendVerification(user);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/verify")

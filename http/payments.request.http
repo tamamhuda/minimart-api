@@ -1,5 +1,5 @@
 ### start payment
-POST {{baseUrl}}/{{version}}/orders/7d532366-fe74-4b80-90df-fef644e1d055/payments
+POST {{baseUrl}}/{{version}}/orders/b9e64b49-5f3a-4b85-9766-538363af84b8/payments
 Authorization: Bearer {{token.access_token}}
 
 ### get payment details

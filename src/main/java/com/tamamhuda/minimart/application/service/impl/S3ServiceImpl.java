@@ -14,7 +14,6 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
@@ -90,12 +89,22 @@ public class S3ServiceImpl  implements S3Service {
         return (dotIndex >= 0) ?  filename.substring(dotIndex + 1) : filename;
     }
 
+    private ResponseInputStream<GetObjectResponse> getImageObject(String prefix, String imageUrl) {
+        try {
+            String key = getKey(prefix, imageUrl);
+            return s3Client.getObject(
+                    GetObjectRequest.builder().bucket(bucket).key(key).build());
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Image not found");
+
+        }
+    }
+
 
     @Override
     public void proxyImage(HttpServletResponse response, String prefix, String imageUrl) {
-        String key = getKey(prefix, imageUrl);
-        try (ResponseInputStream<GetObjectResponse> s3Object = s3Client.getObject(
-                GetObjectRequest.builder().bucket(bucket).key(key).build())) {
+        try (ResponseInputStream<GetObjectResponse> s3Object = getImageObject(prefix, imageUrl)) {
             response.setContentType(s3Object.response().contentType());
             response.setHeader("Content-Disposition", "inline");
             response.flushBuffer();
