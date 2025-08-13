@@ -31,6 +31,9 @@ public class GlobalResponseWrapper implements ResponseBodyAdvice<Object> {
                                   @NonNull  ServerHttpRequest request,
                                   @NonNull  ServerHttpResponse response) {
 
+        if (body instanceof String) {
+            return body; // skip wrapping
+        }
 
         if (MediaType.TEXT_HTML.includes(selectedContentType)
                && !selectedContentType.includes(MediaType.APPLICATION_JSON)) {
@@ -38,10 +41,6 @@ public class GlobalResponseWrapper implements ResponseBodyAdvice<Object> {
         }
 
         if (body instanceof ErrorResponse) {
-            return body;
-        }
-
-        if (body instanceof String && !selectedContentType.includes(MediaType.APPLICATION_JSON)) {
             return body;
         }
 

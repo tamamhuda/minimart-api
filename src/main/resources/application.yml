@@ -109,13 +109,23 @@ bucket4j:
               refill-capacity: 2
 
     - cache-name: auth
-      url: .*/auth/me
+      filter-order: 150
+      url: .*/auth/resend-verification
+      rate-limits:
+        - cache-key: "@securityService.username()"
+          bandwidths:
+            - capacity: 1
+              time: 90
+              unit: seconds
+
+    - cache-name: auth
+      url: .*/order/checkout
       filter-order: 150
       rate-limits:
         - cache-key: "@securityService.username()"
           bandwidths:
-            - capacity: 5
-              initial-capacity: 10
+            - capacity: 10
+              initial-capacity: 20
               time: 30
               unit: seconds
               refill-speed: interval

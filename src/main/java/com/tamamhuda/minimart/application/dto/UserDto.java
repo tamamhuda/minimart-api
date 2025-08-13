@@ -16,7 +16,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @JsonInclude(JsonInclude.Include.ALWAYS)
-@JsonPropertyOrder({"id", "full_name", "username", "email", "role", "is_verified"})
+@JsonPropertyOrder({"id", "full_name", "username", "email", "role", "is_verified", "profile_image"})
 public class UserDto {
 
     private String id;
@@ -30,6 +30,9 @@ public class UserDto {
 
     @JsonProperty("is_verified")
     private boolean isVerified;
+
+    @JsonProperty("profile_image")
+    private String profileImage;
 
     @JsonProperty("role")
     private String roles;

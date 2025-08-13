@@ -1,28 +1,36 @@
 package com.tamamhuda.minimart.config;
 
+import com.tamamhuda.minimart.common.authorization.VerifiedUserAuthManager;
 import com.tamamhuda.minimart.common.exception.AccessDeniedExceptionHandler;
 import com.tamamhuda.minimart.common.exception.AuthExceptionHandler;
+import com.tamamhuda.minimart.domain.entity.User;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+@Slf4j
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 @EnableMethodSecurity
 @AllArgsConstructor
 public class SecurityConfig {
@@ -30,6 +38,7 @@ public class SecurityConfig {
     private final AuthExceptionHandler authExceptionHandler;
     private final AuthenticationProvider authenticationProvider;
     private final AccessDeniedExceptionHandler accessDeniedExceptionHandler;
+    private final VerifiedUserAuthManager verifiedUserAuthManager;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
@@ -43,30 +52,36 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/healthz").authenticated()
-                        .requestMatchers("/auth/me").authenticated()
+                        // --- Additional Auth Logic ---
+                        .requestMatchers("/auth/resend-verification").access((authz, context) -> {
+                            Authentication authentication = authz.get();
+                            User user = (User) authentication.getPrincipal();
+                            if (user.isVerified()) {
+                                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already verified");
+                            }
+                            return new AuthorizationDecision(true);
+                        })
 
-                        .requestMatchers("/test/**").permitAll()
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/auth/me").authenticated()
-
-                        .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/products/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/products/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/products/**").authenticated()
-
-                        .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/categories/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/categories/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/categories/**").authenticated()
-
-                        .requestMatchers("/cart/**").authenticated()
-
-                        .requestMatchers("/orders/**").authenticated()
-
+                        // --- Public Endpoints ---
+                        .requestMatchers("/auth/**", "/test/**", "/users/images/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/webhook/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**").permitAll()
 
+                        // --- Authenticated Only (No Verification Required) ---
+                        .requestMatchers("/healthz", "/users/me").authenticated()
+
+                        // --- Verified User Required ---
+                        .requestMatchers(
+                                "/user/**",
+                                "/cart/**",
+                                "/orders/**",
+                                "/products/**",
+                                "/categories/**"
+                        ).access(verifiedUserAuthManager)
+
+                        // --- Fallback ---
                         .anyRequest().authenticated()
+
                 )
                 .authenticationProvider(authenticationProvider)
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(authExceptionHandler))

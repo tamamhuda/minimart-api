@@ -9,7 +9,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -17,7 +19,6 @@ import java.util.*;
 @Setter
 @ToString
 public class User extends BaseEntity implements UserDetails {
-
 
     @Column(unique = true, nullable = false)
     private String username;
@@ -30,6 +31,9 @@ public class User extends BaseEntity implements UserDetails {
 
     @Column(name = "full_name",nullable = false)
     private String fullName;
+
+    @Column(name = "profile_image", columnDefinition = "TEXT default null")
+    private String profileImage;
 
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean enabled = false;

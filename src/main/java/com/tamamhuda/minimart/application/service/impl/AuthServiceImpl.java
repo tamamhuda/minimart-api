@@ -10,7 +10,6 @@ import com.tamamhuda.minimart.domain.entity.User;
 import com.tamamhuda.minimart.domain.enums.OtpStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public TokenResponseDto register(RegisterRequestDto request) {
+    public TokenResponseDto register(UserRequestDto request) {
         User rquestUser = userRequestMapper.toEntity(request);
 
         User user = userService.createUser(rquestUser);
@@ -61,12 +60,6 @@ public class AuthServiceImpl implements AuthService {
                 .refreshToken(refreshToken)
                 .build();
 
-    }
-
-    @Override
-    @Cacheable(cacheNames = "users", key = "#user.id")
-    public UserDto me(User user) throws UnauthorizedException {
-        return userMapper.toDto(user);
     }
 
     @Override
@@ -104,6 +97,12 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
+    @Override
+    public String resendVerification(User user) {
+        String otpToken = verificationServiceImpl.generateOtpForUser(user.getUsername());
+        mailServiceImpl.sendEmailVerification(user, otpToken);
+        return "OK";
+    }
 }
 
 

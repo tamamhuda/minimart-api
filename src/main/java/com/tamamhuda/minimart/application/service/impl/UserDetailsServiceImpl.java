@@ -19,7 +19,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UnauthorizedException {
         User user =  userService.getByUsernameOrEmail(username);
-        return validateUserIsVerified(user);
+        return userService.getByUsernameOrEmail(username);
     }
 
     private UserDetails validateUserIsVerified(User user) {

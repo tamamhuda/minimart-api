@@ -1,0 +1,51 @@
+### current user authenticated
+GET {{baseUrlAPI}}/{{version}}/users/me
+Authorization: Bearer {{token.access_token}}
+
+### update user
+PUT {{baseUrlAPI}}/{{version}}/users/ec0d53cb-3d70-4560-b720-801afbbb7a2d
+Content-Type: application/json
+Authorization: Bearer {{token.access_token}}
+
+{
+  "full_name": "Tamam Huda"
+}
+
+### change password
+PUT {{baseUrlAPI}}/{{version}}/users/ec0d53cb-3d70-4560-b720-801afbbb7a2d/change-password
+Content-Type: application/json
+Authorization: Bearer {{token.access_token}}
+
+{
+  "old_password": "password",
+  "new_password": "new-password",
+  "confirm_new_password": "new-password"
+}
+
+### upload profile image
+POST {{baseUrlAPI}}/{{version}}/users/ec0d53cb-3d70-4560-b720-801afbbb7a2d/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: Bearer {{token.access_token}}
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="sample.jpg"
+Content-Type: image/jpeg
+
+< ./sample.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### stream profile image
+GET {{baseUrlAPI}}/{{version}}/users/images/f82eaa8f-1589-42f7-9372-cc6f0661ab02-sample.jpg
+
+### admin: get all users
+GET {{baseUrlAPI}}/{{version}}/users
+Authorization: Bearer {{token.access_token}}
+
+### admin: get user by id
+GET {{baseUrlAPI}}/{{version}}/users/ec0d53cb-3d70-4560-b720-801afbbb7a2d/change-password
+Authorization: Bearer {{token.access_token}}
+
+### admin: delet user by id
+PUT {{baseUrlAPI}}/{{version}}/users/ec0d53cb-3d70-4560-b720-801afbbb7a2d/change-password
+Authorization: Bearer {{token.access_token}}
+
