@@ -6,7 +6,7 @@ import com.tamamhuda.minimart.application.dto.UserRequestDto;
 import com.tamamhuda.minimart.application.mapper.UserMapper;
 import com.tamamhuda.minimart.application.mapper.UserRequestMapper;
 import com.tamamhuda.minimart.application.service.UserService;
-import com.tamamhuda.minimart.common.dto.PageResponse;
+import com.tamamhuda.minimart.common.dto.PageDto;
 import com.tamamhuda.minimart.common.exception.UnauthorizedException;
 import com.tamamhuda.minimart.domain.entity.User;
 import com.tamamhuda.minimart.domain.repository.UserRepository;
@@ -135,10 +135,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageResponse<UserDto> getAllUsers(Pageable pageable) {
+    public PageDto<UserDto> getAllUsers(Pageable pageable) {
         Page<UserDto> page = userRepository.findAll(pageable).map(userMapper::toDto);
 
-        return PageResponse.<UserDto>builder()
+        return PageDto.<UserDto>builder()
                 .content(page.getContent())
                 .pageSize(page.getSize())
                 .totalElements(page.getTotalElements())

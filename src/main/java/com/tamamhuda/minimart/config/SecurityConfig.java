@@ -43,7 +43,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
         return http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(Customizer.withDefaults())
@@ -63,9 +63,24 @@ public class SecurityConfig {
                         })
 
                         // --- Public Endpoints ---
-                        .requestMatchers("/auth/**", "/test/**", "/users/images/**").permitAll()
+                        .requestMatchers(
+                                "/api-docs.yaml",
+                                "/api-docs",
+                                "/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+
+                                "/auth/**",
+                                "/healthz",
+                                "/users/images/**"
+
+                        ).permitAll()
                         .requestMatchers(HttpMethod.POST, "/webhook/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/products/**",
+                                "/categories/**"
+
+                        ).permitAll()
 
                         // --- Authenticated Only (No Verification Required) ---
                         .requestMatchers("/healthz", "/users/me").authenticated()

@@ -2,9 +2,10 @@ package com.tamamhuda.minimart.application.service;
 
 import com.tamamhuda.minimart.application.dto.CategoryDto;
 import com.tamamhuda.minimart.application.dto.CategoryRequestDto;
+import com.tamamhuda.minimart.common.dto.PageDto;
 import com.tamamhuda.minimart.domain.entity.Category;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface CategoryService {
@@ -20,5 +21,5 @@ public interface CategoryService {
 
     void delete(UUID categoryId);
 
-    List<CategoryDto> getAllCategories();
+    PageDto<CategoryDto> getAllCategories(Pageable pageable);
 }

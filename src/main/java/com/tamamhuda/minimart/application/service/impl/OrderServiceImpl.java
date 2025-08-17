@@ -3,13 +3,15 @@ package com.tamamhuda.minimart.application.service.impl;
 import com.tamamhuda.minimart.application.dto.OrderDto;
 import com.tamamhuda.minimart.application.dto.OrderRequestDto;
 import com.tamamhuda.minimart.application.mapper.OrderMapper;
-import com.tamamhuda.minimart.application.mapper.PaymentMapper;
 import com.tamamhuda.minimart.application.service.OrderService;
+import com.tamamhuda.minimart.common.dto.PageDto;
 import com.tamamhuda.minimart.domain.entity.*;
 import com.tamamhuda.minimart.domain.repository.OrderRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -28,7 +30,6 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final CartServiceImpl cartService;
     private final UserServiceImpl userService;
-    private final PaymentMapper paymentMapper;
 
 
     private Order createOrder(User user, List<OrderItem> orderItems, BigDecimal totalAmount) {
@@ -104,10 +105,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Transactional
-    public List<OrderDto> getAllUserOrders(User user) {
+    public PageDto<OrderDto> getAllUserOrders(User user, Pageable pageable) {
             User existingUser = userService.getUserByUsername(user.getUsername());
-            List<Order> orders = existingUser.getOrders();
-            return orderMapper.toDto(orders);
+            Page<OrderDto> page = orderRepository.findAllByUser(existingUser, pageable).map(orderMapper::toDto);
+            return PageDto.<OrderDto>builder()
+                    .content(page.getContent())
+                    .pageNumber(page.getNumber())
+                    .totalPages(page.getTotalPages())
+                    .totalElements(page.getTotalElements())
+                    .pageSize(page.getSize())
+                    .last(page.isLast())
+                    .build();
     }
 
 
