@@ -3,7 +3,7 @@ package com.tamamhuda.minimart.application.service;
 import com.tamamhuda.minimart.application.dto.UserDto;
 import com.tamamhuda.minimart.application.dto.UserRequestChangePassword;
 import com.tamamhuda.minimart.application.dto.UserRequestDto;
-import com.tamamhuda.minimart.common.dto.PageResponse;
+import com.tamamhuda.minimart.common.dto.PageDto;
 import com.tamamhuda.minimart.common.exception.UnauthorizedException;
 import com.tamamhuda.minimart.domain.entity.User;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,7 +35,7 @@ public interface UserService {
 
     UserDto changePassword(UserRequestChangePassword request, UUID userId) throws CredentialException;
 
-    PageResponse<UserDto> getAllUsers(Pageable pageable);
+    PageDto<UserDto> getAllUsers(Pageable pageable);
 
     void deleteUserById(UUID userId);
 

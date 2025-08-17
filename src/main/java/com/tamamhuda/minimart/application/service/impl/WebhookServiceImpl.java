@@ -29,11 +29,11 @@ public class WebhookServiceImpl implements WebhookService {
     public ResponseEntity<String> xenditPayments(Map<String, Object> payload, String token) {
 
         if (!token.equals(xenditVerificationToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Xendit token verification is invalid.");
         }
 
-        XenditInvoicePayloadDto paymentPayload = objectMapper.convertValue(payload, XenditInvoicePayloadDto.class);
+        XenditInvoicePayloadDto invoicePayload = objectMapper.convertValue(payload, XenditInvoicePayloadDto.class);
 
-        return invoiceService.webhookInvoiceHandler(paymentPayload);
+        return invoiceService.webhookInvoiceHandler(invoicePayload);
     }
 }

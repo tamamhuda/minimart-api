@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tamamhuda.minimart.common.validation.group.Create;
 import com.tamamhuda.minimart.common.validation.group.Update;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -20,6 +21,7 @@ import org.hibernate.validator.constraints.UUID;
 @Setter
 @SuperBuilder
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Schema(name = "CartItemRequestSchema")
 public class CartItemRequestDto {
 
     @JsonProperty("product_id")

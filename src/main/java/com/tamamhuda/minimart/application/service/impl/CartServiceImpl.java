@@ -15,6 +15,8 @@ import com.tamamhuda.minimart.domain.repository.CartItemRepository;
 import com.tamamhuda.minimart.domain.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -149,7 +151,9 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartDto getCart(User user) {
-        return cartMapper.toDto(getOrCreateCart(user));
+    public CartDto getCart(User user, Pageable pageable) {
+        Cart cart = getOrCreateCart(user);
+        Page<CartItemDto> page = cartItemRepository.findAllByCart(cart, pageable).map(cartItemMapper::toDto);
+        return cartMapper.toDtoWithPageItems(cart, page);
     }
 }

@@ -5,7 +5,7 @@ import com.tamamhuda.minimart.application.dto.ProductRequestDto;
 import com.tamamhuda.minimart.application.mapper.ProductMapper;
 import com.tamamhuda.minimart.application.mapper.ProductRequestMapper;
 import com.tamamhuda.minimart.application.service.ProductService;
-import com.tamamhuda.minimart.common.dto.PageResponse;
+import com.tamamhuda.minimart.common.dto.PageDto;
 import com.tamamhuda.minimart.domain.entity.Category;
 import com.tamamhuda.minimart.domain.entity.Product;
 import com.tamamhuda.minimart.domain.repository.ProductRepository;
@@ -138,7 +138,7 @@ public class ProductServiceImpl implements ProductService {
             cacheNames = "productsFilters",
             key = "new org.springframework.cache.interceptor.SimpleKey(#categoryIdOrName, #minPrice, #maxPrice, #pageable.pageNumber, #pageable.pageSize, #pageable.sort.toString())"
     )
-    public PageResponse<ProductDto> getProductsByFilters(String categoryIdOrName, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
+    public PageDto<ProductDto> getProductsByFilters(String categoryIdOrName, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
         String categoryId = null;
 
         if (categoryIdOrName != null) {
@@ -150,7 +150,7 @@ public class ProductServiceImpl implements ProductService {
 
         Page<ProductDto> page = productPage.map(productMapper::toDto);
 
-        return PageResponse.<ProductDto>builder()
+        return PageDto.<ProductDto>builder()
                 .content(page.getContent())
                 .pageNumber(page.getNumber())
                 .totalElements(page.getTotalElements())

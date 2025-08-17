@@ -54,7 +54,7 @@ public class TotpUtils {
             TOTPGenerator totpGenerator = totpGenerator(secretKey);
             return totpGenerator.now();
         } catch (Exception e ) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed trying to generate OTP");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed trying to generate OTP");
         }
     }
 

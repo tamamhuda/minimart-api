@@ -131,3 +131,11 @@ bucket4j:
               refill-speed: interval
               refill-capacity: 2
       http-content-type: application/json
+
+springdoc:
+  api-docs:
+    path: /api-docs
+
+  swagger-ui:
+    path: /swagger-ui.html
+    url: /api-docs

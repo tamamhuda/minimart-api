@@ -1,6 +1,7 @@
 package com.tamamhuda.minimart.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Setter
 @SuperBuilder
 @JsonInclude(JsonInclude.Include.ALWAYS)
+@Schema(name = "PaymentSummarySchema")
 public class PaymentSummaryDto {
     private UUID id;
 

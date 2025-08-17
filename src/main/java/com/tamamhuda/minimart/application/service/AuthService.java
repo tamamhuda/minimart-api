@@ -6,11 +6,11 @@ import com.tamamhuda.minimart.domain.entity.User;
 
 
 public interface AuthService {
-    TokenResponseDto login(LoginRequestDto request) throws UnauthorizedException;
+    TokenDto login(LoginRequestDto request) throws UnauthorizedException;
 
-    TokenResponseDto register(UserRequestDto request);
+    TokenDto register(UserRequestDto request);
 
-    RefreshResponseDto refresh(TokenRequest request);
+    RefreshTokenDto refresh(TokenRequest request);
 
     void logout(TokenRequest request);
 

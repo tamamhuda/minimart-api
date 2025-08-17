@@ -2,7 +2,7 @@ package com.tamamhuda.minimart.common.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tamamhuda.minimart.common.annotation.RequiredRoles;
-import com.tamamhuda.minimart.common.dto.ErrorResponse;
+import com.tamamhuda.minimart.common.dto.ErrorResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -33,14 +33,14 @@ public class AccessDeniedExceptionHandler implements AccessDeniedHandler {
         String message = Arrays.stream(requiredRoles).findAny().isEmpty() ? accessDeniedException.getLocalizedMessage()
                 : "Access Denied. Required roles: " + String.join(", ", requiredRoles) ;
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
                 .status(response.getStatus())
                 .message(message)
                 .error("Access Denied")
                 .path(request.getRequestURI())
                 .build();
 
-        response.getWriter().write(mapper.writeValueAsString(errorResponse));
+        response.getWriter().write(mapper.writeValueAsString(errorResponseDto));
     }
 
     private String[] getRequiredRoles(HttpServletRequest request) {

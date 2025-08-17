@@ -5,17 +5,19 @@ import com.tamamhuda.minimart.application.dto.CategoryRequestDto;
 import com.tamamhuda.minimart.application.mapper.CategoryMapper;
 import com.tamamhuda.minimart.application.mapper.CategoryRequestMapper;
 import com.tamamhuda.minimart.application.service.CategoryService;
+import com.tamamhuda.minimart.common.dto.PageDto;
 import com.tamamhuda.minimart.domain.entity.Category;
 import com.tamamhuda.minimart.domain.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -85,8 +87,15 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Cacheable(cacheNames = "categories", key = "'all-categories'")
-    public List<CategoryDto> getAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
-        return categoryMapper.toDto(categories);
+    public PageDto<CategoryDto> getAllCategories(Pageable pageable) {
+        Page<CategoryDto> page = categoryRepository.findAll(pageable).map(categoryMapper::toDto);
+        return PageDto.<CategoryDto>builder()
+                .content(page.getContent())
+                .pageNumber(page.getNumber())
+                .totalElements(page.getTotalElements())
+                .pageSize(page.getSize())
+                .totalPages(page.getTotalPages())
+                .last(page.isLast())
+                .build();
     }
 }

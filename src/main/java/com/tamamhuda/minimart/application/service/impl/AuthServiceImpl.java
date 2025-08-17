@@ -28,7 +28,7 @@ public class AuthServiceImpl implements AuthService {
     private final VerificationServiceImpl verificationServiceImpl;
 
     @Override
-    public TokenResponseDto login(LoginRequestDto request) throws UnauthorizedException {
+    public TokenDto login(LoginRequestDto request) throws UnauthorizedException {
         UserDetails user = userService.validateCredentials(request.getUsername(), request.getPassword());
 
         String accessToken = jwtUtils.generateAccessToken(user);
@@ -36,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
 
         sessionService.signSession(accessToken, refreshToken);
 
-        return TokenResponseDto.builder()
+        return TokenDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -45,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public TokenResponseDto register(UserRequestDto request) {
+    public TokenDto register(UserRequestDto request) {
         User rquestUser = userRequestMapper.toEntity(request);
 
         User user = userService.createUser(rquestUser);
@@ -55,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
         String otpToken = verificationServiceImpl.generateOtpForUser(user.getUsername());
         mailServiceImpl.sendEmailVerification(user, otpToken);
 
-        return TokenResponseDto.builder()
+        return TokenDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -63,12 +63,12 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public RefreshResponseDto refresh(TokenRequest request) throws UnauthorizedException {
+    public RefreshTokenDto refresh(TokenRequest request) throws UnauthorizedException {
         String refreshToken = request.getToken();
         String accessToken =  jwtService.issueNewAccessToken(refreshToken);
         sessionService.refreshSession(refreshToken, accessToken);
 
-        return RefreshResponseDto.builder()
+        return RefreshTokenDto.builder()
                 .accessToken(accessToken)
                 .build();
 

@@ -2,7 +2,7 @@ package com.tamamhuda.minimart.application.service;
 
 import com.tamamhuda.minimart.application.dto.ProductDto;
 import com.tamamhuda.minimart.application.dto.ProductRequestDto;
-import com.tamamhuda.minimart.common.dto.PageResponse;
+import com.tamamhuda.minimart.common.dto.PageDto;
 import com.tamamhuda.minimart.domain.entity.Product;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Pageable;
@@ -30,5 +30,5 @@ public interface ProductService {
 
     void proxyProductImage(HttpServletResponse response, UUID productId, String imageUrl);
 
-    PageResponse<ProductDto> getProductsByFilters(String categoryIdOrName, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
+    PageDto<ProductDto> getProductsByFilters(String categoryIdOrName, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
 }

@@ -96,7 +96,7 @@ public class S3ServiceImpl  implements S3Service {
                     GetObjectRequest.builder().bucket(bucket).key(key).build());
 
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Image not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found");
 
         }
     }

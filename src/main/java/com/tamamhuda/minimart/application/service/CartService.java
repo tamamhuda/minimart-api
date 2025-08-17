@@ -5,6 +5,7 @@ import com.tamamhuda.minimart.application.dto.CartItemDto;
 import com.tamamhuda.minimart.application.dto.CartItemRequestDto;
 import com.tamamhuda.minimart.domain.entity.CartItem;
 import com.tamamhuda.minimart.domain.entity.User;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,7 +21,7 @@ public interface CartService {
 
     CartItemDto updateCartItem(UUID cartItemId, CartItemRequestDto request);
 
-    CartDto getCart(User user);
+    CartDto getCart(User user, Pageable pageable);
 
     CartItemDto getCartItem(UUID cartItemId);
 

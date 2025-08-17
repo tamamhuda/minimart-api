@@ -2,9 +2,9 @@ package com.tamamhuda.minimart.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.tamamhuda.minimart.common.validation.group.Create;
 import com.tamamhuda.minimart.common.validation.group.Update;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,6 +18,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
+@Schema(name = "ProductRequestSchema")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductRequestDto extends BaseDto {
 
