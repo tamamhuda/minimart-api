@@ -33,7 +33,9 @@ build/
 .vscode/
 
 ### env files
-.env**
+.env.dev
+.env.local
+.env.prod
 
 ### any files
 .DS_Store
