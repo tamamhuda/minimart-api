@@ -1,8 +1,8 @@
 CREATE TABLE cart
 (
     id         UUID DEFAULT gen_random_uuid() NOT NULL,
-    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
-    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE    NOT NULL,
+    updated_at TIMESTAMP WITHOUT TIME ZONE    NOT NULL,
     user_id    UUID DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT pk_cart PRIMARY KEY (id)
 );
@@ -10,8 +10,8 @@ CREATE TABLE cart
 CREATE TABLE cart_item
 (
     id         UUID DEFAULT gen_random_uuid() NOT NULL,
-    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
-    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE    NOT NULL,
+    updated_at TIMESTAMP WITHOUT TIME ZONE    NOT NULL,
     cart_id    UUID DEFAULT gen_random_uuid() NOT NULL,
     product_id UUID DEFAULT gen_random_uuid() NOT NULL,
     quantity   INTEGER                        NOT NULL,
@@ -21,8 +21,8 @@ CREATE TABLE cart_item
 CREATE TABLE category
 (
     id          UUID DEFAULT gen_random_uuid() NOT NULL,
-    created_at  TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
-    updated_at  TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
+    created_at  TIMESTAMP WITHOUT TIME ZONE    NOT NULL,
+    updated_at  TIMESTAMP WITHOUT TIME ZONE    NOT NULL,
     name        VARCHAR(255)                   NOT NULL,
     description VARCHAR(255),
     CONSTRAINT pk_category PRIMARY KEY (id)
@@ -31,8 +31,8 @@ CREATE TABLE category
 CREATE TABLE invoice
 (
     id                     UUID DEFAULT gen_random_uuid() NOT NULL,
-    created_at             TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
-    updated_at             TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
+    created_at             TIMESTAMP WITHOUT TIME ZONE    NOT NULL,
+    updated_at             TIMESTAMP WITHOUT TIME ZONE    NOT NULL,
     payment_id             UUID DEFAULT gen_random_uuid() NOT NULL,
     customer_name          VARCHAR(255)                   NOT NULL,
     customer_email         VARCHAR(255),
@@ -50,8 +50,8 @@ CREATE TABLE invoice
 CREATE TABLE order_item
 (
     id          UUID DEFAULT gen_random_uuid() NOT NULL,
-    created_at  TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
-    updated_at  TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
+    created_at  TIMESTAMP WITHOUT TIME ZONE    NOT NULL,
+    updated_at  TIMESTAMP WITHOUT TIME ZONE    NOT NULL,
     order_id    UUID DEFAULT gen_random_uuid(),
     product_id  UUID DEFAULT gen_random_uuid() NOT NULL,
     quantity    INTEGER                        NOT NULL,
@@ -62,8 +62,8 @@ CREATE TABLE order_item
 CREATE TABLE orders
 (
     id          UUID DEFAULT gen_random_uuid() NOT NULL,
-    created_at  TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
-    updated_at  TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
+    created_at  TIMESTAMP WITHOUT TIME ZONE    NOT NULL,
+    updated_at  TIMESTAMP WITHOUT TIME ZONE    NOT NULL,
     user_id     UUID DEFAULT gen_random_uuid() NOT NULL,
     status      VARCHAR(255)                   NOT NULL,
     total_price DECIMAL                        NOT NULL,
@@ -73,8 +73,8 @@ CREATE TABLE orders
 CREATE TABLE payment
 (
     id             UUID DEFAULT gen_random_uuid() NOT NULL,
-    created_at     TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
-    updated_at     TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
+    created_at     TIMESTAMP WITHOUT TIME ZONE    NOT NULL,
+    updated_at     TIMESTAMP WITHOUT TIME ZONE    NOT NULL,
     order_id       UUID DEFAULT gen_random_uuid() NOT NULL,
     invoice_id     UUID DEFAULT gen_random_uuid(),
     payment_method VARCHAR(255),
@@ -87,8 +87,8 @@ CREATE TABLE payment
 CREATE TABLE product
 (
     id             UUID DEFAULT gen_random_uuid() NOT NULL,
-    created_at     TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
-    updated_at     TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
+    created_at     TIMESTAMP WITHOUT TIME ZONE    NOT NULL,
+    updated_at     TIMESTAMP WITHOUT TIME ZONE    NOT NULL,
     name           VARCHAR(255)                   NOT NULL,
     description    VARCHAR(255)                   NOT NULL,
     price          DECIMAL                        NOT NULL,
@@ -101,8 +101,8 @@ CREATE TABLE product
 CREATE TABLE session
 (
     id                       UUID    DEFAULT gen_random_uuid() NOT NULL,
-    created_at               TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
-    updated_at               TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
+    created_at               TIMESTAMP WITHOUT TIME ZONE       NOT NULL,
+    updated_at               TIMESTAMP WITHOUT TIME ZONE       NOT NULL,
     user_id                  UUID    DEFAULT gen_random_uuid() NOT NULL,
     access_token             VARCHAR(255)                      NOT NULL,
     refresh_token            VARCHAR(255)                      NOT NULL,
@@ -116,8 +116,8 @@ CREATE TABLE session
 CREATE TABLE users
 (
     id            UUID    DEFAULT gen_random_uuid() NOT NULL,
-    created_at    TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
-    updated_at    TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()             NOT NULL,
+    created_at    TIMESTAMP WITHOUT TIME ZONE       NOT NULL,
+    updated_at    TIMESTAMP WITHOUT TIME ZONE       NOT NULL,
     username      VARCHAR(255)                      NOT NULL,
     password      VARCHAR(255)                      NOT NULL,
     email         VARCHAR(255)                      NOT NULL,
@@ -137,6 +137,15 @@ ALTER TABLE category
 
 ALTER TABLE invoice
     ADD CONSTRAINT uc_invoice_external UNIQUE (external_id);
+
+ALTER TABLE invoice
+    ADD CONSTRAINT uc_invoice_payment UNIQUE (payment_id);
+
+ALTER TABLE payment
+    ADD CONSTRAINT uc_payment_invoice UNIQUE (invoice_id);
+
+ALTER TABLE payment
+    ADD CONSTRAINT uc_payment_order UNIQUE (order_id);
 
 ALTER TABLE session
     ADD CONSTRAINT uc_session_refresh_token UNIQUE (refresh_token);

@@ -23,5 +23,11 @@ public class DotenvInitializer implements ApplicationContextInitializer<Configur
         dotenv.entries().forEach(e -> {
             System.setProperty(e.getKey(), e.getValue());
         });
+
+        if (!activeProfile.equals("prod")) dotenv.entries().forEach(e -> {
+
+            log.info("System property set {} -> {}", e.getKey(), e.getValue());
+            });
+
     }
 }
