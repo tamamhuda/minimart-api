@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -30,13 +29,12 @@ import java.util.List;
 
 @Slf4j
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @EnableMethodSecurity
 @AllArgsConstructor
 public class SecurityConfig {
 
     private final AuthExceptionHandler authExceptionHandler;
-    private final AuthenticationProvider authenticationProvider;
     private final AccessDeniedExceptionHandler accessDeniedExceptionHandler;
     private final VerifiedUserAuthManager verifiedUserAuthManager;
 
@@ -98,7 +96,6 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
 
                 )
-                .authenticationProvider(authenticationProvider)
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(authExceptionHandler))
                 .exceptionHandling(ex -> ex.accessDeniedHandler(accessDeniedExceptionHandler))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

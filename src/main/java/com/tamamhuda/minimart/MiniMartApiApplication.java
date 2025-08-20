@@ -1,5 +1,6 @@
 package com.tamamhuda.minimart;
 
+import com.tamamhuda.minimart.config.DotenvInitializer;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -7,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +25,7 @@ import java.util.Map;
 @Tag(
         name = "MiniMart Api"
 )
+@EntityScan(basePackages = "com.tamamhuda.minimart.domain.entity")
 public class MiniMartApiApplication {
 
 
@@ -51,12 +54,14 @@ public class MiniMartApiApplication {
 	public ResponseEntity<Map<String, Object>> healthz() {
 		Map<String, Object> response = new HashMap<>();
 		response.put("status", HttpStatus.OK.value());
-		response.put("message", "OK");
+		response.put("message", "OKE");
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(MiniMartApiApplication.class, args);
+        SpringApplication app = new SpringApplication(MiniMartApiApplication.class);
+        app.addInitializers(new DotenvInitializer());
+        app.run(args);
 	}
 
 

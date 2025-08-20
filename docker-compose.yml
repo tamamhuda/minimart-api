@@ -1,17 +1,22 @@
 
-
 services:
+  redis:
+    container_name: minimart_redis
+    image: redis:latest
+    ports:
+      - "${REDIS_PORT}"
+    networks:
+      - minimart_network
+
   db:
     container_name: minimart_pg
     image: postgres:latest
-    env_file:
-      - .env
     environment:
-      POSTGRES_DATABASE: ${POSTGRES_DB}
+      POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}"
     volumes:
       - data:/var/lib/postgresql/data
     restart: unless-stopped

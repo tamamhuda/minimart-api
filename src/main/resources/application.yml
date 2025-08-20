@@ -1,11 +1,18 @@
+# Base configuration (common for all profiles)
 server:
-  port: ${APP_PORT}
+  port: ${APP_PORT:8080}
   servlet:
     context-path: "/api/v1"
 
 spring:
   application:
-    name: ${APP_NAME}
+    name: ${APP_NAME:my-app}
+
+
+  output:
+    ansi:
+      enabled: always
+
   datasource:
     url: ${DATABASE_URL}
     username: ${POSTGRES_USER}
@@ -13,26 +20,20 @@ spring:
     driver-class-name: org.postgresql.Driver
 
   jpa:
-    hibernate:
-      ddl-auto: none
-
-    show-sql: true
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-  config:
-    import: optional:file:.env
+    show-sql: false
+    open-in-view: off
 
   security:
     user:
       name: admin
       password: admin
-
     jwt:
       access:
         secret-key: ${JWT_ACCESS_SECRET}
-        expiration-in-minutes: ${JWT_ACCESS_EXPIRATION_IN_MINUTES}
+        expiration-in-minutes: ${JWT_ACCESS_EXPIRATION_IN_MINUTES:15}
       refresh:
         secret-key: ${JWT_REFRESH_SECRET}
-        expiration-in-days: ${JWT_REFRESH_EXPIRATION_IN_DAYS}
+        expiration-in-days: ${JWT_REFRESH_EXPIRATION_IN_DAYS:7}
 
   cloud:
     config:
@@ -41,15 +42,13 @@ spring:
           access-key: ${AWS_ACCESS_KEY}
           secret-key: ${AWS_SECRET_KEY}
         s3:
-          region: ${AWS_S3_REGION}
+          region: ${AWS_S3_REGION:us-east-1}
           bucket: ${AWS_S3_BUCKET}
 
   xendit:
     secret-key: ${XENDIT_SECRET_KEY}
     webhook-verification-token: ${XENDIT_VERIFICATION_TOKEN}
-    redirect:
-      success-url: http://localhost:8080/api/v1/webhook/payment
-      failure-url: http://localhost:8080/api/v1/webhook/payment/failure
+
   jackson:
     property-naming-strategy: SNAKE_CASE
 
@@ -57,14 +56,13 @@ spring:
     type: redis
     redis:
       use-key-prefix: true
-      key-prefix: ${REDIS_KEY_PREFIX}
-
+      key-prefix: ${REDIS_KEY_PREFIX:app}
 
   data:
     redis:
-      host: ${REDIS_HOST}
-      database: ${REDIS_DB}
-      port: ${REDIS_PORT}
+      host: ${REDIS_HOST:localhost}
+      database: ${REDIS_DB:0}
+      port: ${REDIS_PORT:6379}
       repositories:
         enabled: false
 
@@ -77,65 +75,20 @@ spring:
 
   totp:
     global-secret: ${TOTP_GLOBAL_SECRET}
-    expiration-in-minutes: ${TOTP_EXPIRY_IN_MINUTES}
+    expiration-in-minutes: ${TOTP_EXPIRY_IN_MINUTES:5}
 
 bucket4j:
-  key-prefix: "buckets"
-  redis-address: redis://localhost:6379
   enabled: true
-  filters:
-    - cache-name: auth
-      url: .*/auth/register
-      rate-limits:
-        - cache-key: getRemoteAddr()
-          bandwidths:
-            - capacity: 5
-              initial-capacity: 10
-              time: 30
-              unit: seconds
-              refill-speed: interval
-              refill-capacity: 2
-
-    - cache-name: auth
-      url: .*/auth/login
-      rate-limits:
-        - cache-key: getRemoteAddr()
-          bandwidths:
-            - capacity: 5
-              initial-capacity: 10
-              time: 30
-              unit: seconds
-              refill-speed: interval
-              refill-capacity: 2
-
-    - cache-name: auth
-      filter-order: 150
-      url: .*/auth/resend-verification
-      rate-limits:
-        - cache-key: "@securityService.username()"
-          bandwidths:
-            - capacity: 1
-              time: 90
-              unit: seconds
-
-    - cache-name: auth
-      url: .*/order/checkout
-      filter-order: 150
-      rate-limits:
-        - cache-key: "@securityService.username()"
-          bandwidths:
-            - capacity: 10
-              initial-capacity: 20
-              time: 30
-              unit: seconds
-              refill-speed: interval
-              refill-capacity: 2
-      http-content-type: application/json
+  key-prefix: "buckets"
+  redis-address: ${REDIS_ADDRESS:redis://localhost:6379}
 
 springdoc:
   api-docs:
     path: /api-docs
-
   swagger-ui:
     path: /swagger-ui.html
     url: /api-docs
+
+logging:
+  level:
+    org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer: ERROR

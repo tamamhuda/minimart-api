@@ -1,0 +1,70 @@
+# Local Development Profile
+spring:
+
+  config:
+    activate:
+      on-profile: dev
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+  xendit:
+    redirect:
+      success-url: ${XENDIT_SUCCESS_URL:https://localhost:8080/api/v1/webhook/payment}
+      failure-url: ${XENDIT_FAILURE_URL:https://localhost:8080/api/v1/webhook/payment/failure}
+
+  devtools:
+    livereload:
+      enabled: true
+
+bucket4j:
+  filters:
+    - cache-name: auth
+      url: .*/auth/register
+      rate-limits:
+        - cache-key: getRemoteAddr()
+          bandwidths:
+            - capacity: 20
+              initial-capacity: 30
+              time: 60
+              unit: seconds
+              refill-speed: interval
+              refill-capacity: 5
+
+    - cache-name: auth
+      url: .*/auth/login
+      rate-limits:
+        - cache-key: getRemoteAddr()
+          bandwidths:
+            - capacity: 20
+              initial-capacity: 30
+              time: 60
+              unit: seconds
+              refill-speed: interval
+              refill-capacity: 5
+
+    - cache-name: auth
+      filter-order: 150
+      url: .*/auth/resend-verification
+      rate-limits:
+        - cache-key: "@securityService.username()"
+          bandwidths:
+            - capacity: 5
+              time: 60
+              unit: seconds
+
+    - cache-name: auth
+      url: .*/order/checkout
+      filter-order: 150
+      rate-limits:
+        - cache-key: "@securityService.username()"
+          bandwidths:
+            - capacity: 50
+              initial-capacity: 100
+              time: 60
+              unit: seconds
+              refill-speed: interval
+              refill-capacity: 10
+      http-content-type: application/json
