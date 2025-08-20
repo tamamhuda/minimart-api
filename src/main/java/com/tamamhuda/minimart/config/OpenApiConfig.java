@@ -86,7 +86,7 @@ public class OpenApiConfig {
     @Bean
     public OpenApiCustomizer apiErrorResponseCustomizer() {
         return openApi -> openApi.getPaths().forEach((path, pathItem) ->
-                pathItem.readOperationsMap().forEach((_, operation) -> handlerMapping.getHandlerMethods().forEach((mappingInfo, handlerMethod) -> {
+                pathItem.readOperationsMap().forEach((httpMethod, operation) -> handlerMapping.getHandlerMethods().forEach((mappingInfo, handlerMethod) -> {
                     Set<String> patterns = mappingInfo.getPathPatternsCondition() != null
                             ? mappingInfo.getPathPatternsCondition().getPatternValues()
                             : Collections.emptySet();
@@ -122,7 +122,7 @@ public class OpenApiConfig {
     @Bean
     public OpenApiCustomizer apiUnauthorizedCustomizer() {
         return openApi -> openApi.getPaths().forEach((path, pathItem) ->
-                pathItem.readOperationsMap().forEach((_, operation) -> handlerMapping.getHandlerMethods().forEach((mappingInfo, handlerMethod) -> {
+                pathItem.readOperationsMap().forEach((httpMethod, operation) -> handlerMapping.getHandlerMethods().forEach((mappingInfo, handlerMethod) -> {
                     Set<String> patterns = mappingInfo.getPathPatternsCondition() != null
                             ? mappingInfo.getPathPatternsCondition().getPatternValues()
                             : Collections.emptySet();
@@ -156,7 +156,7 @@ public class OpenApiConfig {
     @Bean
     public OpenApiCustomizer apiNotFoundCustomizer() {
         return openApi -> openApi.getPaths().forEach((path, pathItem) ->
-                pathItem.readOperationsMap().forEach((_, operation) -> handlerMapping.getHandlerMethods().forEach((mappingInfo, handlerMethod) -> {
+                pathItem.readOperationsMap().forEach((httpMethod, operation) -> handlerMapping.getHandlerMethods().forEach((mappingInfo, handlerMethod) -> {
                     Set<String> patterns = mappingInfo.getPathPatternsCondition() != null
                             ? mappingInfo.getPathPatternsCondition().getPatternValues()
                             : Collections.emptySet();
@@ -190,7 +190,7 @@ public class OpenApiConfig {
     @Bean
     public OpenApiCustomizer apiValidationErrorCustomizer() {
         return openApi -> openApi.getPaths().forEach((path, pathItem) ->
-                pathItem.readOperationsMap().forEach((_, operation) -> handlerMapping.getHandlerMethods().forEach((mappingInfo, handlerMethod) -> {
+                pathItem.readOperationsMap().forEach((httpMethod, operation) -> handlerMapping.getHandlerMethods().forEach((mappingInfo, handlerMethod) -> {
                     Set<String> patterns = mappingInfo.getPathPatternsCondition() != null
                             ? mappingInfo.getPathPatternsCondition().getPatternValues()
                             : Collections.emptySet();

@@ -10,13 +10,13 @@ services:
 
   db:
     container_name: minimart_pg
-    image: postgres:latest
+    image: postgres:17-alpine
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "${POSTGRES_PORT}"
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
       - data:/var/lib/postgresql/data
     restart: unless-stopped
