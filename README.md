@@ -469,9 +469,9 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 git clone https://github.com/tamamhuda/minimart-api.git
 cd minimart-api
 
-# Create .env file with your configuration
-cp .env.example .env
-# Edit .env with your actual values
+# Create .env.dev.prod file with your configuration
+cp .env.dev.prod.example .env.dev.prod
+# Edit .env.dev.prod with your actual values
 
 docker-compose up -d
 

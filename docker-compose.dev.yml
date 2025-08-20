@@ -1,0 +1,14 @@
+
+services:
+  app:
+    container_name: minimart_app
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    ports:
+      - "8080:${APP_PORT}"
+    networks:
+      - minimart_network
+    depends_on:
+      - db
+      - redis

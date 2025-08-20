@@ -81,7 +81,7 @@ public class RedisConfig {
     }
 
     @Bean
-    public CacheManager buckectCacheManager(Config config, RedisCacheManager redisCacheManager) {
+    public CacheManager buckectCacheManager(Config config) {
         CacheManager manager = Caching.getCachingProvider().getCacheManager();
         manager.createCache("auth", RedissonConfiguration.fromConfig(config));
         manager.createCache("order", RedissonConfiguration.fromConfig(config));

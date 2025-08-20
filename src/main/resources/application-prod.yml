@@ -1,0 +1,90 @@
+# Production Profile
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+
+  xendit:
+    redirect:
+      success-url: ${XENDIT_SUCCESS_URL:https://localhost:8080/api/v1/webhook/payment}
+      failure-url: ${XENDIT_FAILURE_URL:https://localhost:8080/api/v1/webhook/payment/failure}
+
+  devtools:
+    livereload:
+      enabled: false
+
+  datasource:
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:20}
+      minimum-idle: ${DB_POOL_MIN_IDLE:10}
+
+server:
+  error:
+    include-stacktrace: never
+    include-message: never
+
+bucket4j:
+  filters:
+    - cache-name: auth
+      url: .*/auth/register
+      rate-limits:
+        - cache-key: getRemoteAddr()
+          bandwidths:
+            - capacity: 5
+              initial-capacity: 10
+              time: 30
+              unit: seconds
+              refill-speed: interval
+              refill-capacity: 2
+
+    - cache-name: auth
+      url: .*/auth/login
+      rate-limits:
+        - cache-key: getRemoteAddr()
+          bandwidths:
+            - capacity: 5
+              initial-capacity: 10
+              time: 30
+              unit: seconds
+              refill-speed: interval
+              refill-capacity: 2
+
+    - cache-name: auth
+      filter-order: 150
+      url: .*/auth/resend-verification
+      rate-limits:
+        - cache-key: "@securityService.username()"
+          bandwidths:
+            - capacity: 1
+              time: 90
+              unit: seconds
+
+    - cache-name: auth
+      url: .*/order/checkout
+      filter-order: 150
+      rate-limits:
+        - cache-key: "@securityService.username()"
+          bandwidths:
+            - capacity: 10
+              initial-capacity: 20
+              time: 30
+              unit: seconds
+              refill-speed: interval
+              refill-capacity: 2
+      http-content-type: application/json
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+logging:
+  level:
+    root: WARN
+    com.tamamhuda: INFO
