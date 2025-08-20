@@ -4,7 +4,7 @@ services:
     container_name: minimart_redis
     image: redis:latest
     ports:
-      - "${REDIS_PORT}"
+      - "${REDIS_PORT}:${REDIS_PORT}"
     networks:
       - minimart_network
 
