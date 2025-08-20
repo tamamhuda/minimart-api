@@ -7,6 +7,7 @@ A complete Spring Boot backend for a MiniMart e-commerce application featuring J
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
 - [Getting Started](#-getting-started)
+- [Configuration](#-configuration)
 - [API Documentation](#-api-documentation)
 - [Authentication](#-authentication)
 - [Payment Integration](#-payment-integration)
@@ -35,15 +36,16 @@ A complete Spring Boot backend for a MiniMart e-commerce application featuring J
 - **File Storage**: AWS S3 integration for images and uploads
 - **Global Exception Handling**: Consistent error responses
 - **API Versioning**: `/api/v1` context path structure
+- **Database Migration**: Flyway integration for schema management
 
 ## 🛠 Tech Stack
 
 ### Core Technologies
-- **Java 17** - Programming language
+- **Java 21** - Programming language
 - **Spring Boot 3.x** - Application framework
 - **Spring Security** - Authentication & authorization
 - **Spring Data JPA** - Data persistence
-- **PostgreSQL** - Primary database
+- **PostgreSQL 17** - Primary database
 - **Redis** - Caching & session storage
 
 ### Additional Libraries
@@ -56,6 +58,7 @@ A complete Spring Boot backend for a MiniMart e-commerce application featuring J
 - **Mailtrap API** - Email notifications
 - **OTP-Java** - TOTP generation
 - **AWS SDK** - S3 file storage
+- **Flyway** - Database migration
 
 ### DevOps & Tools
 - **Docker & Docker Compose** - Containerization
@@ -89,23 +92,31 @@ minimart-api/
 │   │   │       ├── enums/                  # Enumerations
 │   │   │       └── repository/             # Data Repositories
 │   │   └── resources/
-│   │       ├── application.yml             # Configuration
+│   │       ├── application.yml             # Base Configuration
+│   │       ├── application-dev.yml         # Development Profile
+│   │       ├── application-local.yml       # Local Profile
+│   │       ├── application-prod.yml        # Production Profile
+│   │       ├── db/migration/               # Flyway Migration Scripts
 │   │       ├── static/                     # Static Resources
 │   │       └── templates/                  # Email Templates
 │   └── test/                               # Test Classes
-├── docker-compose.yml                      # Development Stack
-├── Dockerfile                              # Application Container
+├── docker-compose.yml                      # Database and Redis Services
+├── docker-compose.dev.yml                 # Development Application
+├── docker-compose.prod.yml                # Production Application
+├── Dockerfile                              # Production Container
+├── Dockerfile-dev                          # Development Container
+├── .env.example                           # Environment Variables Template
 └── pom.xml                                # Maven Dependencies
 ```
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Java 17 or higher
+- Java 21 or higher
 - Maven 3.6+
 - Docker & Docker Compose
-- PostgreSQL (if running locally)
-- Redis (if running locally)
+- PostgreSQL 17 (if running locally without Docker)
+- Redis (if running locally without Docker)
 
 ### 1. Clone the Repository
 ```bash
@@ -115,96 +126,232 @@ cd minimart-api
 
 ### 2. Environment Setup
 
-#### Environment Variables
-Create a `.env` file in the project root with the following variables:
+#### Create Environment Configuration
+Copy the example environment file and customize it for your needs:
+
+```bash
+# For local development
+cp .env.example .env.local
+
+# For development environment
+cp .env.example .env.dev
+
+# For production environment
+cp .env.example .env.prod
+```
+
+#### Environment Variables Reference
+
+The `.env.example` file contains all the necessary environment variables:
 
 ```env
+# Spring Profile (change based on environment: local, dev, prod)
+SPRING_PROFILES_ACTIVE=local
+
 # Application Configuration
-APP_NAME=minimart-api
 APP_PORT=8080
+APP_NAME=MiniMart
 
 # Database Configuration
-DATABASE_URL=jdbc:postgresql://localhost:5432/minimart
-POSTGRES_USER=admin
-POSTGRES_PASSWORD=password
+POSTGRES_DB=minimart_db
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_PORT=5432
+
+# Database URL (adjust host based on environment)
+DATABASE_URL=jdbc:postgresql://localhost:5432/minimart_db
 
 # JWT Configuration
-JWT_ACCESS_SECRET=your_jwt_access_secret_key_here
-JWT_ACCESS_EXPIRATION_IN_MINUTES=15
-JWT_REFRESH_SECRET=your_jwt_refresh_secret_key_here
+JWT_ACCESS_SECRET=R2XJ6wAOx1I7ZAPO10+fe0BNz8FZqfF2iA4rqzE4MYY=
+JWT_REFRESH_SECRET=N0TFuEJ0Xj7kBIrbi5akMGHRaPWpfcZFeGQZHHi6m7s=
+
+# JWT Expiration
+JWT_ACCESS_EXPIRATION_IN_MINUTES=59
 JWT_REFRESH_EXPIRATION_IN_DAYS=7
 
-# AWS S3 Configuration
-AWS_ACCESS_KEY=your_aws_access_key
-AWS_SECRET_KEY=your_aws_secret_key
-AWS_S3_REGION=us-east-1
-AWS_S3_BUCKET=minimart-uploads
+# AWS S3 Configuration (add your credentials)
+AWS_ACCESS_KEY=
+AWS_SECRET_KEY=
+AWS_S3_REGION=
+AWS_S3_BUCKET=
 
-# Xendit Configuration
-XENDIT_SECRET_KEY=xnd_development_your_secret_key
-XENDIT_VERIFICATION_TOKEN=your_xendit_webhook_token
+# Xendit Payment Configuration (add your credentials)
+XENDIT_SECRET_KEY=
+XENDIT_VERIFICATION_TOKEN=
+XENDIT_SUCCESS_URL=http://localhost:8080/api/v1/webhook/payment
+XENDIT_FAILURE_URL=http://localhost:8080/api/v1/webhook/payment
 
-# Redis Configuration
-REDIS_HOST=localhost
+# Redis Configuration (adjust host based on environment)
+REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
 REDIS_DB=0
-REDIS_KEY_PREFIX=minimart:
+REDIS_KEY_PREFIX=minimart
+REDIS_ADDRESS=redis://127.0.0.1:6379
 
-# Mailtrap Configuration
-MAILTRAP_TOKEN=your_mailtrap_api_token
-MAILTRAP_SENDER_EMAIL=noreply@minimart.com
-MAILTRAP_TEMPLATE_VERIFICATION_EMAIL_ID=your_template_id
-MAILTRAP_TEMPLATE_VERIFICATION_URL=http://localhost:8080/api/v1/auth/verify
+# Mailtrap Email Configuration (add your credentials)
+MAILTRAP_TOKEN=
+MAILTRAP_SENDER_EMAIL=
+MAILTRAP_TEMPLATE_VERIFICATION_EMAIL_ID=
+MAILTRAP_TEMPLATE_VERIFICATION_URL=
 
 # TOTP Configuration
-TOTP_GLOBAL_SECRET=your_global_totp_secret
+TOTP_GLOBAL_SECRET=IazVijkSfZG/B41nZ3xIrYUO1CGxdjF+o5i8TyQXz4s=
 TOTP_EXPIRY_IN_MINUTES=5
 ```
 
-#### Using Docker Compose (Recommended)
-```bash
-# Start all services (PostgreSQL, Redis, Application)
-docker-compose up -d
+#### Environment-Specific Customizations
 
-# View logs
-docker-compose logs -f app
+**For Local Development (`.env.local`):**
+- Keep `SPRING_PROFILES_ACTIVE=local`
+- Use `DATABASE_URL=jdbc:postgresql://localhost:5432/minimart_db`
+- Use `REDIS_HOST=127.0.0.1` and `REDIS_ADDRESS=redis://127.0.0.1:6379`
+- Set shorter JWT expiration for testing
+
+**For Development Environment (`.env.dev`):**
+- Change `SPRING_PROFILES_ACTIVE=dev`
+- Use `DATABASE_URL=jdbc:postgresql://minimart_pg:5432/minimart_db` (Docker service name)
+- Use `REDIS_HOST=minimart_redis` and `REDIS_ADDRESS=redis://minimart_redis:6379`
+- Add development-specific AWS S3 bucket
+- Use Xendit development keys
+
+**For Production Environment (`.env.prod`):**
+- Change `SPRING_PROFILES_ACTIVE=prod`
+- Use strong, unique JWT secrets (minimum 64 characters)
+- Use production database credentials
+- Add production AWS S3 and Xendit credentials
+- Use production email template URLs
+- Ensure all sensitive values are properly secured
+
+### 3. Credential Setup
+
+Before running the application, you need to configure the following services:
+
+#### Required Services
+1. **AWS S3**: Create a bucket and obtain access keys
+2. **Xendit**: Sign up for payment processing and get API keys
+3. **Mailtrap**: Set up email delivery service and get API token
+
+#### Security Notes
+- **Never commit actual credentials to version control**
+- **Generate strong JWT secrets for production** (use tools like `openssl rand -base64 64`)
+- **Use environment-specific secrets** (different for dev/prod)
+- **Rotate secrets regularly in production**
+
+### 4. Running the Application
+
+#### Local Development (Maven + Docker Services)
+```bash
+# Start database and Redis services
+docker-compose --env-file .env.local up -d
+
+# Run application with Maven
+mvn spring-boot:run -Dspring.profiles.active=local
 ```
 
-#### Manual Setup
-1. **Start PostgreSQL and Redis**:
+#### Development Environment (Full Docker)
 ```bash
-# PostgreSQL
-docker run --name postgres \
-  -e POSTGRES_DB=minimart \
-  -e POSTGRES_USER=admin \
-  -e POSTGRES_PASSWORD=password \
-  -p 5432:5432 -d postgres:15
+# Build and start all services
+docker-compose --env-file .env.dev -f docker-compose.yml -f docker-compose.dev.yml up --build
 
-# Redis
-docker run --name redis -p 6379:6379 -d redis:7-alpine
+# Start in detached mode
+docker-compose --env-file .env.dev -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 ```
 
-2. **Set Environment Variables**: Ensure your `.env` file is properly configured (see above)
-
-3. **Run the Application**:
+#### Production Environment (Full Docker)
 ```bash
-mvn spring-boot:run
+# Build and start production services
+docker-compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+
+# Monitor logs
+docker-compose --env-file .env.prod logs -f app
 ```
 
-### 3. Access the Application
+#### Pure Local Development (No Docker)
+```bash
+# Requires local PostgreSQL and Redis running
+mvn spring-boot:run -Dspring.profiles.active=local
+```
+
+### 5. Docker Compose Commands Reference
+
+#### Development Environment
+```bash
+# Start all services with build
+docker-compose --env-file .env.dev -f docker-compose.yml -f docker-compose.dev.yml up --build
+
+# Start in detached mode
+docker-compose --env-file .env.dev -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+# View application logs
+docker-compose --env-file .env.dev logs -f app
+
+# Stop all services
+docker-compose --env-file .env.dev -f docker-compose.yml -f docker-compose.dev.yml down
+
+# Rebuild only application
+docker-compose --env-file .env.dev -f docker-compose.dev.yml build app
+```
+
+#### Production Environment
+```bash
+# Start production services
+docker-compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+
+# Monitor logs
+docker-compose --env-file .env.prod logs -f app
+
+# Stop services
+docker-compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml down
+```
+
+#### Local Services Only
+```bash
+# Start only database and Redis
+docker-compose --env-file .env.local up -d
+
+# Stop services
+docker-compose --env-file .env.local down
+```
+
+### 6. Access the Application
 - **API Base URL**: `http://localhost:8080/api/v1`
-- **Swagger UI**: `http://localhost:8080/api/v1/swagger-ui.html`
+- **Swagger UI**: `http://localhost:8080/api/v1/swagger-ui.html` (local/dev only)
 - **Health Check**: `http://localhost:8080/api/v1/healthz`
-- **API Docs**: `http://localhost:8080/api/v1/api-docs`
+- **API Docs**: `http://localhost:8080/api/v1/api-docs` (local/dev only)
+
+## ⚙️ Configuration
+
+The application uses Spring Profiles for environment-specific configuration:
+
+### Profiles
+- **`local`**: Local development with `create-drop` schema, no Flyway
+- **`dev`**: Development with Flyway migrations, relaxed rate limiting
+- **`prod`**: Production with strict rate limiting, disabled docs, optimized settings
+
+### Rate Limiting Configuration
+The application uses Bucket4j with Redis for distributed rate limiting:
+
+#### Development Settings
+- **Auth endpoints**: 20 requests per 60 seconds per IP
+- **Verification resend**: 5 requests per 60 seconds per user
+- **Checkout**: 50 requests per 60 seconds per user
+
+#### Production Settings
+- **Auth endpoints**: 5 requests per 30 seconds per IP
+- **Verification resend**: 1 request per 90 seconds per user
+- **Checkout**: 10 requests per 30 seconds per user
+
+### Database Migration
+Flyway is used for database schema management:
+
+- **Development/Production**: `flyway.enabled=true` with `ddl-auto=validate`
+- **Local**: `flyway.enabled=false` with `ddl-auto=create-drop`
+- Migration scripts: `src/main/resources/db/migration/`
 
 ## 📚 API Documentation
 
 ### Interactive Documentation
-Visit `http://localhost:8080/api/v1/swagger-ui.html` for the complete interactive API documentation with:
-- All available endpoints
-- Request/response schemas
-- Authentication examples
-- Try-it-out functionality
+Visit `http://localhost:8080/api/v1/swagger-ui.html` for the complete interactive API documentation (available in local/dev profiles only).
 
 ### OpenAPI Specification
 - **JSON Format**: `http://localhost:8080/api/v1/api-docs`
@@ -218,6 +365,7 @@ Visit `http://localhost:8080/api/v1/swagger-ui.html` for the complete interactiv
 - `POST /auth/refresh` - Refresh access token
 - `POST /auth/logout` - Logout and revoke tokens
 - `POST /auth/resend-verification` - Resend verification email
+- `POST /auth/verify` - Verify email with TOTP
 
 #### User Management
 - `GET /users/me` - Get current user profile
@@ -265,7 +413,15 @@ curl -X POST http://localhost:8080/api/v1/auth/register \
     "full_name": "John Doe"
   }'
 
-# 2. Login to get tokens
+# 2. Verify email (check email for TOTP code)
+curl -X POST http://localhost:8080/api/v1/auth/verify \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john@example.com",
+    "totp": "123456"
+  }'
+
+# 3. Login to get tokens
 curl -X POST http://localhost:8080/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{
@@ -302,10 +458,12 @@ The application integrates with **Xendit** for payment processing and uses **AWS
 5. **Order Completion**: Order status updated based on payment
 
 ### Configuration
-The payment system is configured through environment variables:
+The payment system is configured through environment variables in your `.env` file:
 ```env
 XENDIT_SECRET_KEY=xnd_development_your_secret_key
 XENDIT_VERIFICATION_TOKEN=your_xendit_webhook_token
+XENDIT_SUCCESS_URL=http://localhost:8080/api/v1/webhook/payment
+XENDIT_FAILURE_URL=http://localhost:8080/api/v1/webhook/payment
 ```
 
 ### Webhook Setup
@@ -337,6 +495,42 @@ mvn test -Dtest=UserServiceTest
 mvn test jacoco:report
 ```
 
+### Database Operations
+
+All database operations require the `dotenv-cli` npm package to load environment variables from your local `.env` file.
+
+#### Prerequisites
+```bash
+# Install dotenv-cli globally (one-time setup)
+npm install -g dotenv-cli
+```
+
+#### Local Development
+```bash
+# Run Flyway migrations
+dotenv -e .env.local -- mvn -Plocal flyway:migrate
+
+# View migration status
+dotenv -e .env.local -- mvn -Plocal flyway:info
+
+# Clean database (removes all objects)
+dotenv -e .env.local -- mvn -Plocal flyway:clean
+
+# Validate current schema against migrations
+dotenv -e .env.local -- mvn -Plocal flyway:validate
+
+# Reset database and re-run all migrations
+dotenv -e .env.local -- mvn -Plocal flyway:clean
+dotenv -e .env.local -- mvn -Plocal flyway:migrate
+
+# Connect to local database directly
+dotenv -e .env.local -- psql $DATABASE_URL
+
+# Reset database schema (development only)
+dotenv -e .env.local -- psql $DATABASE_URL -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+```
+
+
 ### Code Quality
 ```bash
 # Format code
@@ -349,78 +543,44 @@ mvn checkstyle:check
 mvn spotbugs:check
 ```
 
-### Database Migration
-The application uses JPA with `ddl-auto: none` for production safety. Database schema should be managed through proper migration tools like Flyway or Liquibase.
-
 ### Hot Reload
-The project includes Spring Boot DevTools for automatic application restart during development.
+The project includes Spring Boot DevTools for automatic application restart during development (enabled in local/dev profiles).
 
 ## 🐳 Deployment
 
 ### Docker Production Build
 ```bash
-# Build production image
-docker build -t minimart-api:latest .
+# Build and start production environment
+docker-compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml up --build -d
 
-# Run with production profile
-docker run -d \
-  --name minimart-api \
-  -p 8080:8080 \
-  -e SPRING_PROFILES_ACTIVE=prod \
-  -e DATABASE_URL=your_prod_db_url \
-  -e REDIS_URL=your_prod_redis_url \
-  minimart-api:latest
+# View logs
+docker-compose --env-file .env.prod logs -f app
 ```
 
-### Environment Variables
-Key environment variables for production:
-```env
-# Application
-APP_NAME=minimart-api
-APP_PORT=8080
+### Manual Production Deployment
+```bash
+# Build application
+mvn clean package -DskipTests
 
-# Database
-DATABASE_URL=jdbc:postgresql://prod-host:5432/minimart
-POSTGRES_USER=minimart_user
-POSTGRES_PASSWORD=secure_password
-
-# JWT
-JWT_ACCESS_SECRET=your_secure_jwt_access_secret
-JWT_ACCESS_EXPIRATION_IN_MINUTES=15
-JWT_REFRESH_SECRET=your_secure_jwt_refresh_secret
-JWT_REFRESH_EXPIRATION_IN_DAYS=7
-
-# AWS S3
-AWS_ACCESS_KEY=your_production_access_key
-AWS_SECRET_KEY=your_production_secret_key
-AWS_S3_REGION=us-east-1
-AWS_S3_BUCKET=minimart-prod-uploads
-
-# Xendit
-XENDIT_SECRET_KEY=xnd_production_your_secret_key
-XENDIT_VERIFICATION_TOKEN=your_production_webhook_token
-
-# Redis
-REDIS_HOST=prod-redis-host
-REDIS_PORT=6379
-REDIS_DB=0
-REDIS_KEY_PREFIX=minimart:prod:
-
-# Mailtrap
-MAILTRAP_TOKEN=your_production_token
-MAILTRAP_SENDER_EMAIL=noreply@yourdomain.com
-MAILTRAP_TEMPLATE_VERIFICATION_EMAIL_ID=your_template_id
-MAILTRAP_TEMPLATE_VERIFICATION_URL=https://yourdomain.com/verify
-
-# TOTP
-TOTP_GLOBAL_SECRET=your_production_totp_secret
-TOTP_EXPIRY_IN_MINUTES=5
+# Run with production profile
+java -Dlogging.config=./config/logback-spring.xml \
+     -jar target/minimart-api.jar \
+     --spring.profiles.active=prod
 ```
 
 ### Health Monitoring
 The application provides health checks at:
 - `GET /api/v1/healthz` - Basic health status
 - `GET /api/v1/actuator/health` - Detailed health information (if actuator enabled)
+
+### Security Considerations for Production
+
+1. **JWT Secrets**: Use strong, unique secrets (minimum 64 characters for production)
+2. **Database**: Use encrypted connections and strong passwords
+3. **Rate Limiting**: Production has stricter limits than development
+4. **API Documentation**: Swagger UI and API docs are disabled in production
+5. **Error Handling**: Stack traces are not exposed in production
+6. **Connection Pooling**: Configured for optimal performance with HikariCP
 
 ## 🤝 Contributing
 
@@ -436,6 +596,7 @@ The application provides health checks at:
 - Use conventional commit messages
 - Update documentation for new features
 - Ensure all tests pass before submitting PR
+- Test with different profiles (local, dev, prod)
 
 ### Code Style
 The project follows standard Java coding conventions with:
@@ -458,28 +619,90 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 - Spring Boot team for the excellent framework
 - Xendit for payment processing capabilities
+- Flyway for database migration management
 - All contributors who help improve this project
 
 ---
 
 ## 🔧 Quick Start Commands
 
+### Development Environment
 ```bash
-# Clone and start with Docker
+# Clone the repository
 git clone https://github.com/tamamhuda/minimart-api.git
 cd minimart-api
 
-# Create .env.dev.prod file with your configuration
-cp .env.dev.prod.example .env.dev.prod
-# Edit .env.dev.prod with your actual values
+# Create environment file from example
+cp .env.example .env.dev
+# Edit .env.dev with your actual configuration values
 
-docker-compose up -d
+# Start development environment (database + Redis + application)
+docker-compose --env-file .env.dev -f docker-compose.yml -f docker-compose.dev.yml up --build
 
-# Access Swagger UI
+# View logs
+docker-compose --env-file .env.dev logs -f app
+
+# Access Swagger UI (development only)
 open http://localhost:8080/api/v1/swagger-ui.html
-
-# Test the API
-curl http://localhost:8080/api/v1/healthz
 ```
+
+### Local Development
+```bash
+# Create local environment file
+cp .env.example .env.local
+# Edit .env.local with local configuration
+
+# Option 1: Docker services + Maven application
+docker-compose --env-file .env.local up -d
+mvn spring-boot:run -Plocal
+
+# Option 2: Pure local development (requires local PostgreSQL/Redis)
+mvn spring-boot:run -Plocal
+```
+
+### Production Environment
+```bash
+# Create production environment file
+cp .env.example .env.prod
+# Configure .env.prod with production values and credentials
+
+# Start production environment
+docker-compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+
+# Monitor logs
+docker-compose --env-file .env.prod logs -f app
+```
+
+### Useful Commands
+```bash
+# Test the API health
+curl http://localhost:8080/api/v1/healthz
+
+# View running containers
+docker ps
+
+# Clean up Docker resources
+docker-compose --env-file .env.dev down
+docker system prune -f
+
+# Rebuild application container only
+docker-compose --env-file .env.dev -f docker-compose.dev.yml build app
+
+# View environment-specific logs
+docker-compose --env-file .env.dev logs -f app
+```
+
+### Environment File Setup Checklist
+
+Before running the application, ensure your `.env` files contain:
+
+- ✅ **Spring Profile**: Set `SPRING_PROFILES_ACTIVE` (local/dev/prod)
+- ✅ **Database**: Configure PostgreSQL connection details
+- ✅ **JWT Secrets**: Generate strong secrets for production
+- ✅ **AWS S3**: Add your AWS credentials and bucket name
+- ✅ **Xendit**: Configure payment processing credentials
+- ✅ **Redis**: Set Redis connection details
+- ✅ **Mailtrap**: Configure email service credentials
+- ✅ **URLs**: Update webhook and verification URLs for your domain
 
 For detailed setup instructions and advanced configuration, please refer to the sections above.
