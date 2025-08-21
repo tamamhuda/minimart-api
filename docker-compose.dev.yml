@@ -4,7 +4,7 @@ services:
     container_name: minimart_app
     build:
       context: .
-      dockerfile: Dockerfile-dev
+      dockerfile: Dockerfile
     ports:
       - "${APP_PORT}:${APP_PORT}"
     networks:
@@ -12,7 +12,3 @@ services:
     depends_on:
       - db
       - redis
-
-networks:
-  minimart_network:
-    external: true
