@@ -1,0 +1,21 @@
+on:
+  push:
+    branches:
+      - github-workflows-test
+jobs:
+  vps_connection_test:
+    name: Vps Connection Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: SSH Connection Test
+        run: |
+            ssh -o StrictHostKeyChecking=no -p  ${{ secrets.VPS_SSH_PORT }}  ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 'echo "Connected!"'
+
