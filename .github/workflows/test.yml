@@ -15,6 +15,7 @@ jobs:
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+          log-public-key: false
 
       - name: SSH Connection Test
         run: |
