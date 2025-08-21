@@ -1,18 +1,14 @@
-
 services:
   app:
     container_name: minimart_app
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        PROFILE: ${SPRING_PROFILES_ACTIVE}
     ports:
       - "${APP_PORT}:${APP_PORT}"
     networks:
       - minimart_network
     depends_on:
       - db
-      - redis
-
-networks:
-  minimart_network:
-    external: true
