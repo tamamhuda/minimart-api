@@ -4,6 +4,6 @@ import com.tamamhuda.minimart.application.dto.CartItemRequestDto;
 import com.tamamhuda.minimart.domain.entity.CartItem;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CartItemRequestMapper extends GenericRequestMapper<CartItemRequestDto, CartItem> {
 }

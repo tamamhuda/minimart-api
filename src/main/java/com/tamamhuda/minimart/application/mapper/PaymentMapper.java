@@ -4,7 +4,7 @@ import com.tamamhuda.minimart.application.dto.PaymentDto;
 import com.tamamhuda.minimart.domain.entity.Payment;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface PaymentMapper extends GenericDtoMapper<PaymentDto, Payment> {
 
     @Override
