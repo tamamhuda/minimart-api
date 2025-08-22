@@ -8,9 +8,10 @@ import com.xendit.model.Invoice;
 import com.xendit.model.ItemInvoice;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface XenditInvoiceMapper extends GenericDtoMapper<XenditInvoiceDto, Invoice> {
 
     @Override

@@ -7,9 +7,10 @@ import com.tamamhuda.minimart.domain.entity.Cart;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.ReportingPolicy;
 import org.springframework.data.domain.Page;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CartMapper extends GenericDtoMapper<CartDto, Cart> {
 
     @Override

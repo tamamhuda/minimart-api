@@ -36,6 +36,8 @@ build/
 .env.dev
 .env.local
 .env.prod
+.env.test
+.env
 
 ### any files
 .DS_Store

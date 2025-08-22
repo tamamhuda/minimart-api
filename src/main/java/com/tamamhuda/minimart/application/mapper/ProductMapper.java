@@ -5,7 +5,7 @@ import com.tamamhuda.minimart.domain.entity.Product;
 import org.mapstruct.*;
 
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProductMapper extends GenericDtoMapper<ProductDto, Product> {
 
 }

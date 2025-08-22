@@ -8,15 +8,22 @@ spring:
   application:
     name: ${APP_NAME:my-app}
 
+  config:
+    activate:
+      on-profile: dev,local,prod
+
   output:
     ansi:
       enabled: always
 
+  flyway:
+    enabled: false
+
   datasource:
-    url: ${DATABASE_URL}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
 
   jpa:
     show-sql: false
@@ -75,6 +82,7 @@ spring:
   totp:
     global-secret: ${TOTP_GLOBAL_SECRET}
     expiration-in-minutes: ${TOTP_EXPIRY_IN_MINUTES:5}
+
 
 bucket4j:
   enabled: true

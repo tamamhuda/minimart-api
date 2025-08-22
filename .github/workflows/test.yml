@@ -1,15 +1,65 @@
+name: CI Pipeline
+
 on:
   push:
     branches:
       - github-workflows-test
 
+env:
+  AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+  AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+  AWS_S3_REGION: ${{ secrets.AWS_S3_REGION }}
+  AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+  MAILTRAP_TOKEN: ${{ secrets.MAILTRAP_TOKEN }}
+  MAILTRAP_SENDER_EMAIL: ${{ secrets.MAILTRAP_SENDER_EMAIL }}
+  MAILTRAP_TEMPLATE_VERIFICATION_EMAIL_ID: ${{ secrets.MAILTRAP_TEMPLATE_VERIFICATION_EMAIL_ID }}
+  XENDIT_SECRET_KEY: ${{ secrets.XENDIT_SECRET_KEY }}
+  XENDIT_VERIFICATION_TOKEN: ${{ secrets.XENDIT_VERIFICATION_TOKEN }}
+
 jobs:
-  vps_connection_test:
-    name: VPS Connection Test
+  compile:
+    name: Compile
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: maven
+
+      - name: Run Compile (Test Profile)
+        run: mvn clean compile -Ptest
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: compile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: maven
+
+      - name: Run Tests (Test Profile)
+        run: mvn test -Ptest
+
+  deploy:
+    name: Fake Deploy
+    runs-on: ubuntu-latest
+    needs:
+      - test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
@@ -17,6 +67,7 @@ jobs:
           ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
           log-public-key: false
 
-      - name: SSH Connection Test
+      - name: Deploy App
         run: |
-          ssh -o StrictHostKeyChecking=no -p ${{ secrets.VPS_SSH_PORT }} ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 'echo "Connected!"'
+          ssh -o StrictHostKeyChecking=no -p ${{ secrets.VPS_SSH_PORT }} \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 'echo "App Deployed!"'
