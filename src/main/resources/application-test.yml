@@ -74,9 +74,9 @@ spring:
 
   data:
     redis:
-      host: localhost
+      host: ${REDIS_HOST:localhost}
       database: 0
-      port: 6379
+      port: ${REDIS_PORT:6379}
       repositories:
         enabled: false
 
@@ -97,7 +97,7 @@ spring:
 bucket4j:
   enabled: true
   key-prefix: "buckets"
-  redis-address: redis://localhost:6379
+  redis-address: ${REDIS_ADDRESS:redis://localhost:6379}
   filters:
     - cache-name: auth
       url: .*/auth/register
