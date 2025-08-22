@@ -20,7 +20,7 @@ public class DotenvInitializer implements ApplicationContextInitializer<Configur
 
        if(!activeProfile.equals("test")) {
            try {
-               loadDotEnv(fileName);
+               loadDotEnv(fileName );
            } catch (DotenvException e) {
                log.error(e.getMessage());
            }

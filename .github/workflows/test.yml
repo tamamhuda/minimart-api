@@ -17,6 +17,64 @@ env:
   XENDIT_VERIFICATION_TOKEN: ${{ secrets.XENDIT_VERIFICATION_TOKEN }}
 
 jobs:
+  create-env:
+    name: Setup Environment
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create .env.dev file
+        run: |
+          cat <<EOF > .env.${{vars.SPRING_PROFILES_ACTIVE}}
+          SPRING_PROFILES_ACTIVE=${{ vars.SPRING_PROFILES_ACTIVE }}
+          APP_PORT=${{ vars.APP_PORT }}
+          APP_NAME=${{ vars.APP_NAME }}
+          
+          POSTGRES_DB=${{ vars.POSTGRES_DB }}
+          POSTGRES_USER=${{ vars.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_PORT=${{ vars.POSTGRES_PORT }}
+          DATABASE_URL=${{ vars.DATABASE_URL }}
+          
+          JWT_ACCESS_SECRET=${{ secrets.JWT_ACCESS_SECRET }}
+          JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}
+          JWT_ACCESS_EXPIRATION_IN_MINUTES=${{ vars.JWT_ACCESS_EXPIRATION_IN_MINUTES }}
+          JWT_REFRESH_EXPIRATION_IN_DAYS=${{ vars.JWT_REFRESH_EXPIRATION_IN_DAYS }}
+          
+          AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
+          AWS_S3_REGION=${{ vars.AWS_S3_REGION }}
+          AWS_S3_BUCKET=${{ vars.AWS_S3_BUCKET }}
+          
+          XENDIT_SECRET_KEY=${{ secrets.XENDIT_SECRET_KEY }}
+          XENDIT_VERIFICATION_TOKEN=${{ secrets.XENDIT_VERIFICATION_TOKEN }}
+          XENDIT_SUCCESS_URL=${{ vars.XENDIT_SUCCESS_URL }}
+          XENDIT_FAILURE_URL=${{ vars.XENDIT_FAILURE_URL }}
+          
+          REDIS_HOST=${{ vars.REDIS_HOST }}
+          REDIS_PORT=${{ vars.REDIS_PORT }}
+          REDIS_DB=${{ vars.REDIS_DB }}
+          REDIS_KEY_PREFIX=${{ vars.REDIS_KEY_PREFIX }}
+          REDIS_ADDRESS=${{ vars.REDIS_ADDRESS }}
+          
+          MAILTRAP_TOKEN=${{ secrets.MAILTRAP_TOKEN }}
+          MAILTRAP_SENDER_EMAIL=${{ secrets.MAILTRAP_SENDER_EMAIL }}
+          MAILTRAP_TEMPLATE_VERIFICATION_EMAIL_ID=${{ secrets.MAILTRAP_TEMPLATE_VERIFICATION_EMAIL_ID }}
+          MAILTRAP_TEMPLATE_VERIFICATION_URL=${{ vars.MAILTRAP_TEMPLATE_VERIFICATION_URL }}
+          
+          TOTP_GLOBAL_SECRET=${{ secrets.TOTP_GLOBAL_SECRET }}
+          TOTP_EXPIRY_IN_MINUTES=${{ vars.TOTP_EXPIRY_IN_MINUTES }}
+          EOF
+
+      - name: Upload .env.${{vars.SPRING_PROFILES_ACTIVE}} artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: env-dev
+          path: .env.dev
+
+
   compile:
     name: Compile
     runs-on: ubuntu-latest
@@ -62,11 +120,54 @@ jobs:
       - name: Run Tests (Test Profile)
         run: mvn test -Ptest
 
+  build:
+    name: Build Docker Image (Development)
+    runs-on: ubuntu-latest
+    needs:
+      - test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract Docker image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ vars.DOCKER_USERNAME }}/minimart:latest
+
+      - name: Login Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Download .env.dev
+        uses: actions/download-artifact@v4
+        with:
+          name: env-dev
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          annotations: ${{ steps.meta.outputs.annotations }}
+          build-args: |
+            PROFILE=dev
+          file: Dockerfile
+          context: .
+          provenance: true
+          sbom: true
+
+
   deploy:
     name: Deploy (Development)
     runs-on: ubuntu-latest
     needs:
-      - test
+      - build
     steps:
       - name: Checkout
         uses: actions/checkout@v4
