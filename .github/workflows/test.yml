@@ -25,54 +25,56 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create .env.dev file
+      - name: Create .env.${{ vars.SPRING_PROFILES_ACTIVE }} file
         run: |
-          cat <<EOF > .env.${{vars.SPRING_PROFILES_ACTIVE}}
+          cat <<EOF > .env.${{ vars.SPRING_PROFILES_ACTIVE }}
           SPRING_PROFILES_ACTIVE=${{ vars.SPRING_PROFILES_ACTIVE }}
           APP_PORT=${{ vars.APP_PORT }}
           APP_NAME=${{ vars.APP_NAME }}
-          
+    
           POSTGRES_DB=${{ vars.POSTGRES_DB }}
           POSTGRES_USER=${{ vars.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_PORT=${{ vars.POSTGRES_PORT }}
           DATABASE_URL=${{ vars.DATABASE_URL }}
-          
+    
           JWT_ACCESS_SECRET=${{ secrets.JWT_ACCESS_SECRET }}
           JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}
           JWT_ACCESS_EXPIRATION_IN_MINUTES=${{ vars.JWT_ACCESS_EXPIRATION_IN_MINUTES }}
           JWT_REFRESH_EXPIRATION_IN_DAYS=${{ vars.JWT_REFRESH_EXPIRATION_IN_DAYS }}
-          
+    
           AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
           AWS_S3_REGION=${{ vars.AWS_S3_REGION }}
           AWS_S3_BUCKET=${{ vars.AWS_S3_BUCKET }}
-          
+    
           XENDIT_SECRET_KEY=${{ secrets.XENDIT_SECRET_KEY }}
           XENDIT_VERIFICATION_TOKEN=${{ secrets.XENDIT_VERIFICATION_TOKEN }}
           XENDIT_SUCCESS_URL=${{ vars.XENDIT_SUCCESS_URL }}
           XENDIT_FAILURE_URL=${{ vars.XENDIT_FAILURE_URL }}
-          
+    
           REDIS_HOST=${{ vars.REDIS_HOST }}
           REDIS_PORT=${{ vars.REDIS_PORT }}
           REDIS_DB=${{ vars.REDIS_DB }}
           REDIS_KEY_PREFIX=${{ vars.REDIS_KEY_PREFIX }}
           REDIS_ADDRESS=${{ vars.REDIS_ADDRESS }}
-          
+    
           MAILTRAP_TOKEN=${{ secrets.MAILTRAP_TOKEN }}
           MAILTRAP_SENDER_EMAIL=${{ secrets.MAILTRAP_SENDER_EMAIL }}
           MAILTRAP_TEMPLATE_VERIFICATION_EMAIL_ID=${{ secrets.MAILTRAP_TEMPLATE_VERIFICATION_EMAIL_ID }}
           MAILTRAP_TEMPLATE_VERIFICATION_URL=${{ vars.MAILTRAP_TEMPLATE_VERIFICATION_URL }}
-          
+    
           TOTP_GLOBAL_SECRET=${{ secrets.TOTP_GLOBAL_SECRET }}
           TOTP_EXPIRY_IN_MINUTES=${{ vars.TOTP_EXPIRY_IN_MINUTES }}
           EOF
 
-      - name: Upload .env.${{vars.SPRING_PROFILES_ACTIVE}} artifact
+      - name: Upload .env.dev artifact
         uses: actions/upload-artifact@v4
         with:
-          name: env-dev
-          path: .env.dev
+          include-hidden-files: 'true'
+          name: env-${{ vars.SPRING_PROFILES_ACTIVE }}
+          path: .env.${{ vars.SPRING_PROFILES_ACTIVE }}
+
 
 
   compile:
@@ -123,6 +125,7 @@ jobs:
   build:
     name: Build Docker Image (Development)
     runs-on: ubuntu-latest
+    environment: dev
     needs:
       - test
     steps:
@@ -144,10 +147,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Download .env.dev
+      - name: Download .env.${{ vars.SPRING_PROFILES_ACTIVE }}
         uses: actions/download-artifact@v4
         with:
-          name: env-dev
+          name: env-${{ vars.SPRING_PROFILES_ACTIVE }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
@@ -156,7 +159,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
-            PROFILE=dev
+            PROFILE=${{ vars.SPRING_PROFILES_ACTIVE }}
           file: Dockerfile
           context: .
           provenance: true
