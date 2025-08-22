@@ -138,8 +138,7 @@ jobs:
         with:
           images: ${{ vars.DOCKER_USERNAME }}/minimart
           tags: |
-            type=ref,event=branch
-            type=semver,pattern={{version}},prefix=,fallback=latest
+            ${{ vars.SPRING_PROFILES_ACTIVE }}-1.0.0-latest
 
       - name: Login Docker Hub
         uses: docker/login-action@v3
