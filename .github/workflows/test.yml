@@ -136,7 +136,10 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ vars.DOCKER_USERNAME }}/minimart:latest
+          images: ${{ vars.DOCKER_USERNAME }}/minimart
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}},prefix=,fallback=latest
 
       - name: Login Docker Hub
         uses: docker/login-action@v3
