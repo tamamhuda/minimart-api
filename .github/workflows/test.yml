@@ -128,17 +128,35 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     needs: [create-env, test]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: maven
+
+      - name: Get Maven Project Version
+        id: get-version
+        run: |
+            VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Extract Repository Name
+        id: repo
+        run: echo "name=${GITHUB_REPOSITORY##*/}" >> $GITHUB_OUTPUT
 
       - name: Extract Docker image metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ vars.DOCKER_USERNAME }}/minimart
+          images: ${{ vars.DOCKER_USERNAME }}/${{ github.event.repository.name }}
           tags: |
-            ${{ vars.SPRING_PROFILES_ACTIVE }}-1.0.0-latest
+            ${{ vars.SPRING_PROFILES_ACTIVE }}-${{ steps.get-version.outputs.version }}-latest
 
       - name: Login Docker Hub
         uses: docker/login-action@v3
