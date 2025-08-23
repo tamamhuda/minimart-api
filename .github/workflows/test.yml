@@ -215,11 +215,11 @@ jobs:
           DOCKER_TOKEN=${{ secrets.DOCKER_TOKEN }}
           PROFILE=${{ vars.SPRING_PROFILES_ACTIVE }}
           SSH_PORT=${{ secrets.VPS_SSH_PORT }}
-          VPS_USER=${{ secrets.VPS_SSH_PORT }}
-          VPS_HOST=${{ secrets.VPS_SSH_PORT }}
+          VPS_USER=${{ secrets.VPS_USER }}
+          VPS_HOST=${{ secrets.VPS_HOST }}
 
-          ssh -o StrictHostKeyChecking=no -p $SSH_PORT \
-            $VPS_USER@$VPS_HOST << "EOF"
+          ssh -t -o StrictHostKeyChecking=no -p $SSH_PORT \
+            $VPS_USER@$VPS_HOST << 'EOF'
             echo "Login Docker Hub..."
             echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
