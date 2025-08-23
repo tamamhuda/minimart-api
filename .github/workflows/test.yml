@@ -232,8 +232,8 @@ jobs:
             echo "Login Docker Hub..."
             echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
-            echo "Pulling Docker image $IMAGE..."
-            docker pull "$IMAGE"
+            echo "Pulling Docker image $APP_IMAGE..."
+            docker pull "$APP_IMAGE"
 
             echo "Stopping existing containers..."
             docker-compose --env-file .env.$PROFILE \
