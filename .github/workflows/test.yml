@@ -191,6 +191,7 @@ jobs:
   deploy:
     name: Deploy (Development)
     runs-on: ubuntu-latest
+    environment: dev
     needs: [create-env, build]
     steps:
       - name: Checkout
@@ -207,15 +208,18 @@ jobs:
         with:
           name: env-${{ vars.SPRING_PROFILES_ACTIVE }}
 
-      - name: Deploy (Development Profile)
+      - name: Deploy
         run: |
           IMAGE="${{ needs.build.outputs.image-tag }}"
           DOCKER_USERNAME=${{ vars.DOCKER_USERNAME }}
           DOCKER_TOKEN=${{ secrets.DOCKER_TOKEN }}
           PROFILE=${{ vars.SPRING_PROFILES_ACTIVE }}
+          SSH_PORT=${{ secrets.VPS_SSH_PORT }}
+          VPS_USER=${{ secrets.VPS_SSH_PORT }}
+          VPS_HOST=${{ secrets.VPS_SSH_PORT }}
 
-          ssh -o StrictHostKeyChecking=no -p ${{ secrets.VPS_SSH_PORT }} \
-            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << "EOF"
+          ssh -o StrictHostKeyChecking=no -p $SSH_PORT \
+            $VPS_USER@$VPS_HOST << "EOF"
             echo "Login Docker Hub..."
             echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
