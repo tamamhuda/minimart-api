@@ -192,48 +192,63 @@ jobs:
     name: Deploy (Development)
     runs-on: ubuntu-latest
     environment: dev
-    needs: [create-env, build]
+    needs: [ create-env, build ]
+    env:
+      IMAGE: ${{ needs.build.outputs.image-tag }}
+      PROFILE: ${{ vars.SPRING_PROFILES_ACTIVE }}
+      DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
-          log-public-key: false
 
       - name: Download .env.${{ vars.SPRING_PROFILES_ACTIVE }}
         uses: actions/download-artifact@v4
         with:
           name: env-${{ vars.SPRING_PROFILES_ACTIVE }}
 
-      - name: Deploy
-        run: |
-          IMAGE="${{ needs.build.outputs.image-tag }}"
-          DOCKER_USERNAME=${{ vars.DOCKER_USERNAME }}
-          DOCKER_TOKEN=${{ secrets.DOCKER_TOKEN }}
-          PROFILE=${{ vars.SPRING_PROFILES_ACTIVE }}
-          SSH_PORT=${{ secrets.VPS_SSH_PORT }}
-          VPS_USER=${{ secrets.VPS_USER }}
-          VPS_HOST=${{ secrets.VPS_HOST }}
+      - name: Copy Docker Compose files and env to VPS
+        uses: appleboy/scp-action@v0.1.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.VPS_SSH_PORT }}
+          source: |
+            docker-compose.yml
+            docker-compose.prod.yml
+            .env.${{ vars.SPRING_PROFILES_ACTIVE }}
+          target: ~/minimart-api/
 
-          ssh -t -o StrictHostKeyChecking=no -p $SSH_PORT \
-            $VPS_USER@$VPS_HOST << 'EOF'
+      - name: Deploy
+        uses: appleboy/ssh-action@v1
+        env:
+          IMAGE: ${{ env.IMAGE }}
+          PROFILE: ${{ env.PROFILE }}
+          DOCKER_USERNAME: ${{ env.DOCKER_USERNAME }}
+          DOCKER_TOKEN: ${{ env.DOCKER_TOKEN }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.VPS_SSH_PORT }}
+          envs: IMAGE,PROFILE,DOCKER_USERNAME,DOCKER_TOKEN
+          script: |
+            cd ~/minimart-api
+
             echo "Login Docker Hub..."
             echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
             echo "Pulling Docker image $IMAGE..."
             docker pull "$IMAGE"
 
+            echo "Stopping existing containers..."
+            docker-compose --env-file .env.$PROFILE \
+              -f docker-compose.yml -f docker-compose.prod.yml down -v
+
             echo "Deploying container..."
-            export APP_IMAGE="$IMAGE"
-          
             docker-compose --env-file .env.$PROFILE \
-            -f docker-compose.yml -f docker-compose.prod.yml down -v
-          
-            docker-compose --env-file .env.$PROFILE \
-            -f docker-compose.yml -f docker-compose.prod.yml up -d
+              -f docker-compose.yml -f docker-compose.prod.yml up -d
 
             echo "Deployed!"
-          EOF
