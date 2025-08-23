@@ -193,11 +193,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     needs: [ create-env, build ]
-    env:
-      IMAGE: ${{ needs.build.outputs.image-tag }}
-      PROFILE: ${{ vars.SPRING_PROFILES_ACTIVE }}
-      DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
-      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
     steps:
       - name: Checkout
@@ -213,7 +208,7 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.KEY }}
+          key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_SSH_PORT }}
           source: |
             docker-compose.yml
@@ -231,7 +226,7 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.KEY }}
+          key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_SSH_PORT }}
           envs: IMAGE,PROFILE,DOCKER_USERNAME,DOCKER_TOKEN
           script: |
