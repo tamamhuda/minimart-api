@@ -47,11 +47,11 @@ import java.util.Set;
         ),
         servers = {
                 @Server(
-                        description = "Local Env",
+                        description = "Development",
                         url = "http://localhost:8080/api/v1"
                 ),
                 @Server(
-                        description = "Prod Env",
+                        description = "Production",
                         url = "https://minimart.utadev.app/api/v1"
                 )
         }

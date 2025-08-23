@@ -20,7 +20,7 @@ jobs:
   create-env:
     name: Setup Environment
     runs-on: ubuntu-latest
-    environment: dev
+    environment: ${{ vars.ENV }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -68,7 +68,7 @@ jobs:
           TOTP_EXPIRY_IN_MINUTES=${{ vars.TOTP_EXPIRY_IN_MINUTES }}
           EOF
 
-      - name: Upload .env.dev artifact
+      - name: Upload .env.${{ vars.SPRING_PROFILES_ACTIVE }} artifact
         uses: actions/upload-artifact@v4
         with:
           include-hidden-files: 'true'
@@ -124,9 +124,9 @@ jobs:
         run: mvn test -Ptest
 
   build:
-    name: Build Docker Image (Development)
+    name: Build Docker Image
     runs-on: ubuntu-latest
-    environment: dev
+    environment: ${{ vars.ENV }}
     needs: [create-env, test]
     outputs:
       image-tag: ${{ steps.meta.outputs.tags }}
@@ -189,9 +189,9 @@ jobs:
 
 
   deploy:
-    name: Deploy (Development)
+    name: Deploy
     runs-on: ubuntu-latest
-    environment: dev
+    environment: ${{ vars.ENV }}
     needs: [ create-env, build ]
     env:
       APP_IMAGE: ${{ needs.build.outputs.image-tag }}
