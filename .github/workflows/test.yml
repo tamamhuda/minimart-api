@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI Pipeline Test
 
 on:
   push:
@@ -128,6 +128,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     needs: [create-env, test]
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
 
     steps:
       - name: Checkout
@@ -200,7 +202,34 @@ jobs:
           ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
           log-public-key: false
 
+      - name: Download .env.${{ vars.SPRING_PROFILES_ACTIVE }}
+        uses: actions/download-artifact@v4
+        with:
+          name: env-${{ vars.SPRING_PROFILES_ACTIVE }}
+
       - name: Deploy (Development Profile)
         run: |
+          IMAGE="${{ needs.build.outputs.image-tag }}"
+          DOCKER_USERNAME=${{ vars.DOCKER_USERNAME }}
+          DOCKER_TOKEN=${{ secrets.DOCKER_TOKEN }}
+          PROFILE=${{ vars.SPRING_PROFILES_ACTIVE }}
+
           ssh -o StrictHostKeyChecking=no -p ${{ secrets.VPS_SSH_PORT }} \
-            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 'echo "App Deployed!"'
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << "EOF"
+            echo "Login Docker Hub..."
+            echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+            echo "Pulling Docker image $IMAGE..."
+            docker pull "$IMAGE"
+
+            echo "Deploying container..."
+            export APP_IMAGE="$IMAGE"
+          
+            docker-compose --env-file .env.$PROFILE \
+            -f docker-compose.yml -f docker-compose.prod.yml down -v
+          
+            docker-compose --env-file .env.$PROFILE \
+            -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+            echo "Deployed!"
+          EOF
