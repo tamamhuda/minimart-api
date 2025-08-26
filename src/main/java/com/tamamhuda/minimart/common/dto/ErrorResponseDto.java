@@ -3,15 +3,18 @@ package com.tamamhuda.minimart.common.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 
 @AllArgsConstructor
-@RequiredArgsConstructor
-@Setter
-@Getter
-@Builder
+@NoArgsConstructor
+@Data
+@SuperBuilder
 @JsonPropertyOrder({"status", "error", "message", "path", "timestamp"})
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Schema(name = "ErrorResponseSchema", description = "Standard API error response")

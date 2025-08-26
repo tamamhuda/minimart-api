@@ -21,9 +21,12 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
     show-sql: false
     open-in-view: off
+
+  main:
+    allow-bean-definition-overriding: true
 
   sql:
     init:
@@ -63,17 +66,14 @@ spring:
 
   cache:
     type: none
-    redis:
-      use-key-prefix: true
-      key-prefix: app
 
-  data:
-    redis:
-      host: localhost
-      database: 0
-      port: 6379
-      repositories:
-        enabled: false
+#  data:
+#    redis:
+#      host: localhost
+#      database: 0
+#      port: 6379
+#      repositories:
+#        enabled: false
 
   mailtrap:
     token: dummy-mailtrap-token
@@ -88,8 +88,6 @@ spring:
 
 bucket4j:
   enabled: false
-  key-prefix: "buckets"
-  redis-address: redis://localhost:6379
 
 springdoc:
   api-docs:

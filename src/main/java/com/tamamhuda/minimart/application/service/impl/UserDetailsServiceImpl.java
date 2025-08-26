@@ -15,6 +15,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UnauthorizedException {
+        // returns your User entity
         return userService.getByUsernameOrEmail(username);
     }
 }
