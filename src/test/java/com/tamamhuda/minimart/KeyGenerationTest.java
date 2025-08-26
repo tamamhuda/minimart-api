@@ -1,12 +1,14 @@
 package com.tamamhuda.minimart;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.util.Base64;
 
-public class JwtKeyGenerationTest {
+@Slf4j
+public class KeyGenerationTest {
 
     @Test
     public void generateSecretKey() throws Exception {
@@ -16,7 +18,6 @@ public class JwtKeyGenerationTest {
 
         String base64Key = Base64.getEncoder().encodeToString(secretKey.getEncoded());
 
-        System.out.println("Generated JWT Secret Key (Base64):");
-        System.out.println(base64Key);
+        log.info("Generated Secret Key (Base64): {}", base64Key);
     }
 }

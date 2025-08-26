@@ -2,6 +2,7 @@ package com.tamamhuda.minimart.config;
 
 
 import io.github.cdimascio.dotenv.Dotenv;
+import io.github.cdimascio.dotenv.DotenvException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContextInitializer;
@@ -15,19 +16,27 @@ public class DotenvInitializer implements ApplicationContextInitializer<Configur
         String activeProfile = context.getEnvironment().getActiveProfiles()[0];
         log.info("Active profile: {}", activeProfile);
 
+        String fileName = ".env." + activeProfile;
+
+       if(!activeProfile.equals("test")) {
+           try {
+               loadDotEnv(fileName );
+           } catch (DotenvException e) {
+               log.error(e.getMessage());
+           }
+       }
+
+    }
+
+    private void loadDotEnv(String filename) {
         Dotenv dotenv = Dotenv.configure()
-                .filename(".env." + activeProfile)
+                .filename(filename)
                 .ignoreIfMissing()
                 .load();
 
         dotenv.entries().forEach(e -> {
             System.setProperty(e.getKey(), e.getValue());
         });
-
-        if (!activeProfile.equals("prod")) dotenv.entries().forEach(e -> {
-
-            log.info("System property set {} -> {}", e.getKey(), e.getValue());
-            });
-
     }
+
 }

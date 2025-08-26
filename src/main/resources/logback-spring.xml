@@ -5,7 +5,7 @@
     <!-- ================================================== -->
     <!-- DEVELOPMENT PROFILE (colorful console logging) -->
     <!-- ================================================== -->
-    <springProfile name="dev,local">
+    <springProfile name="dev,local,test">
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
                 <pattern>
@@ -57,7 +57,7 @@
     <!-- FALLBACK (no profile set) → use dev-like logging   -->
     <!-- Exclude dev, local, prod                           -->
     <!-- ================================================== -->
-    <springProfile name="!dev &amp; !local &amp; !prod">
+    <springProfile name="!dev &amp; !local &amp; !prod &amp; !test">
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
                 <pattern>

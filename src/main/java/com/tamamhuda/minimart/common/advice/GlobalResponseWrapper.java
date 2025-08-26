@@ -39,10 +39,11 @@ public class GlobalResponseWrapper implements ResponseBodyAdvice<Object> {
             return body; // skip wrapping for all swagger endpoints
         }
 
-        // Skip HTML, JSON string, and errors
+
+
+        // Skip HTML, Plain Text, and errors
         if (MediaType.TEXT_HTML.includes(selectedContentType)
-                || body instanceof String
-                || body instanceof ErrorResponseDto) {
+                || MediaType.TEXT_PLAIN.includes(selectedContentType) || body instanceof ErrorResponseDto) {
             return body;
         }
 
