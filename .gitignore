@@ -39,3 +39,4 @@ build/
 
 ### any files
 .DS_Store
+.*/**/ci-cd.yml
