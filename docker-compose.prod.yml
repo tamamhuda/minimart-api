@@ -1,11 +1,7 @@
 services:
   app:
     container_name: minimart_app
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        PROFILE: ${SPRING_PROFILES_ACTIVE}
+    image: ${APP_IMAGE}
     ports:
       - "${APP_PORT}:${APP_PORT}"
     networks:
