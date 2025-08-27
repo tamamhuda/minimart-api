@@ -140,15 +140,17 @@ jobs:
     env:
       APP_IMAGE: ${{ needs.build.outputs.image-tag }}
       PROFILE: ${{ vars.SPRING_PROFILES_ACTIVE }}
+      DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download .env.${{ vars.ENV }}
+      - name: Download .env.${{ vars.SPRING_PROFILES_ACTIVE }}
         uses: actions/download-artifact@v4
         with:
-          name: env-${{ vars.ENV }}
+          name: env-${{ vars.SPRING_PROFILES_ACTIVE }}
 
       - name: Copy Docker Compose files and env to VPS
         uses: appleboy/scp-action@v0.1.0
@@ -157,7 +159,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_SSH_PORT }}
-          source: "docker-compose.yml,docker-compose.prod.yml,.env.${{ vars.ENV }}"
+          source: "docker-compose.yml,docker-compose.prod.yml,.env.${{ vars.SPRING_PROFILES_ACTIVE }}"
           target: ~/minimart-api/
 
       - name: Deploy
@@ -167,11 +169,22 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_SSH_PORT }}
-          envs: APP_IMAGE,PROFILE
+          envs: APP_IMAGE,PROFILE,DOCKER_USERNAME,DOCKER_TOKEN
           script: |
             cd ~/minimart-api
+
             echo "Login Docker Hub..."
-            echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u "${{ vars.DOCKER_USERNAME }}" --password-stdin
+            echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+            echo "Pulling Docker image $APP_IMAGE..."
             docker pull "$APP_IMAGE"
-            docker-compose --env-file .env.$PROFILE -f docker-compose.yml -f docker-compose.prod.yml down -v
-            docker-compose --env-file .env.$PROFILE -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+            echo "Stopping existing containers..."
+            docker-compose --env-file .env.$PROFILE \
+              -f docker-compose.yml -f docker-compose.prod.yml down -v
+
+            echo "Deploying container..."
+            docker-compose --env-file .env.$PROFILE \
+              -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+            echo "Deployed!"
