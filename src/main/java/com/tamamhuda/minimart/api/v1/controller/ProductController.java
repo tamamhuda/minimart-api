@@ -13,6 +13,7 @@ import com.tamamhuda.minimart.common.annotation.RequiredRoles;
 import com.tamamhuda.minimart.common.dto.ErrorResponseDto;
 import com.tamamhuda.minimart.common.dto.PageDto;
 import com.tamamhuda.minimart.common.validation.group.Create;
+import com.tamamhuda.minimart.common.validation.group.Update;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,7 +21,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -66,7 +66,7 @@ public class ProductController {
     )
     @ApiUnauthorizedResponse()
     @ApiValidationErrorResponse()
-    public ResponseEntity<ProductDto> create(@Valid @RequestBody ProductRequestDto request){
+    public ResponseEntity<ProductDto> create(@Validated(Create.class) @RequestBody ProductRequestDto request){
         ProductDto product = productService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
@@ -120,7 +120,7 @@ public class ProductController {
     @ApiUnauthorizedResponse()
     @ApiValidationErrorResponse()
     @ApiNotFoundResponse(description = "Product not found", message = "Product not found")
-    public ResponseEntity<ProductDto> update(@Valid @RequestBody ProductRequestDto request, @PathVariable UUID product_id){
+    public ResponseEntity<ProductDto> update(@Validated(Update.class) @RequestBody ProductRequestDto request, @PathVariable UUID product_id){
         ProductDto product =  productService.update(request, product_id);
         return ResponseEntity.status(HttpStatus.OK).body(product);
     }

@@ -57,7 +57,7 @@ class AuthControllerTest {
 
     @Test
     @DisplayName("Login success returns token")
-    void login_success() throws Exception {
+    void testLogin() throws Exception {
         LoginRequestDto request = LoginRequestDto.builder()
                 .username("johndoe")
                 .password("password")
@@ -77,7 +77,7 @@ class AuthControllerTest {
 
     @Test
     @DisplayName("Register success returns token")
-    void register_success() throws Exception {
+    void testRegister() throws Exception {
         UserRequestDto request = UserRequestDto.builder()
                 .username("johndoe")
                 .fullName("John Doe")
@@ -100,7 +100,7 @@ class AuthControllerTest {
 
     @Test
     @DisplayName("Refresh token success")
-    void refresh_success() throws Exception {
+    void testRefresh() throws Exception {
         TokenRequest request = TokenRequest.builder()
                 .token("refresh-token")
                 .build();
@@ -122,7 +122,7 @@ class AuthControllerTest {
 
     @Test
     @DisplayName("Logout success returns 204")
-    void logout_success() throws Exception {
+    void testLogout() throws Exception {
         TokenRequest request = TokenRequest.builder()
                 .token("access-token")
                 .build();
@@ -138,7 +138,7 @@ class AuthControllerTest {
 
     @Test
     @DisplayName("Resend verification success")
-    void resendVerification_success() throws Exception {
+    void testResendVerification() throws Exception {
         User mockUser = new User();
         mockUser.setUsername("customer");
 
@@ -152,7 +152,7 @@ class AuthControllerTest {
 
     @Test
     @DisplayName("Verify success returns HTML")
-    void verify_success() throws Exception {
+    void testVerify() throws Exception {
         VerifyDto verifyDto = VerifyDto.builder()
                 .status(OtpStatus.SUCCESS)
                 .message("Your account has been successfully verified! You can now log in.")

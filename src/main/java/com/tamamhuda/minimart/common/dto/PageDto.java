@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 import java.util.List;
 
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @SuperBuilder
@@ -27,7 +27,7 @@ public class PageDto<T> {
     @JsonProperty("page_size")
     private int pageSize;
 
-    @JsonProperty("page_elements")
+    @JsonProperty("total_elements")
     private long totalElements;
 
     @JsonProperty("total_pages")

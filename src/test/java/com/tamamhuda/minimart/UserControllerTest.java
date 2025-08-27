@@ -2,8 +2,6 @@ package com.tamamhuda.minimart;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tamamhuda.minimart.api.v1.controller.AuthController;
-import com.tamamhuda.minimart.api.v1.controller.UserController;
 import com.tamamhuda.minimart.application.dto.UserDto;
 import com.tamamhuda.minimart.application.dto.UserRequestChangePassword;
 import com.tamamhuda.minimart.application.dto.UserRequestDto;
@@ -11,49 +9,40 @@ import com.tamamhuda.minimart.application.mapper.UserMapper;
 import com.tamamhuda.minimart.application.service.impl.JwtServiceImpl;
 import com.tamamhuda.minimart.application.service.impl.UserDetailsServiceImpl;
 import com.tamamhuda.minimart.application.service.impl.UserServiceImpl;
-import com.tamamhuda.minimart.config.DotenvInitializer;
+import com.tamamhuda.minimart.common.authorization.VerifiedUserAuthManager;
 import com.tamamhuda.minimart.domain.entity.User;
 import com.tamamhuda.minimart.domain.enums.Role;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @ActiveProfiles({"test"})
 class UserControllerTest {
 
@@ -82,6 +71,10 @@ class UserControllerTest {
 
     @MockitoBean
     private UserDetailsServiceImpl userDetailsService;
+    @MockitoBean
+    private VerifiedUserAuthManager verifiedUserAuthManager;
+    @Autowired
+    private com.tamamhuda.minimart.testutil.TestAuthHelper testAuthHelper;
 
     @BeforeEach
     void setUp() {
@@ -102,8 +95,10 @@ class UserControllerTest {
                 .build();
 
         // Prepare mock user
-        userId = user.getId();
         mockUser = userMapper.toDto(user);
+
+        // Keep ID for tests
+        userId = UUID.fromString(mockUser.getId());
     }
 
 
@@ -114,31 +109,11 @@ class UserControllerTest {
 
 
     private UserDetails mockAuthenticatedUser(Role role) {
-        Mockito.when(jwtService.extractUsername(anyString())).thenReturn("testuser");
-
-        UserDetails userDetails = org.springframework.security.core.userdetails.User
-                .withUsername("testuser")
-                .password("password")
-                .roles(role.name())
-                .build();
-
-
-        Mockito.when(userDetailsService.loadUserByUsername("testuser")).thenReturn(userDetails);
-        Mockito.when(jwtService.isAccessTokenValid("dummy-access-token", userDetails)).thenReturn(true);
-
-        return userDetails;
+        return testAuthHelper.mockAuthenticatedUser(role);
     }
 
-
-
     private RequestPostProcessor authorizationToken(UserDetails userDetails) {
-        return request -> {
-            request.addHeader("Authorization", "Bearer dummy-access-token");
-            UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(userDetails.getUsername(), null, userDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            return request;
-        };
+        return testAuthHelper.authorizationToken(userDetails);
     }
 
     @Test

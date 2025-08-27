@@ -8,7 +8,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @SuperBuilder
@@ -37,7 +37,7 @@ public class XenditInvoicePayloadDto extends XenditBaseInvoiceDto{
 
 
     @AllArgsConstructor
-    @RequiredArgsConstructor
+    @NoArgsConstructor
     @Getter
     @Setter
     @SuperBuilder
